@@ -285,9 +285,16 @@ class Scanner:
             self.update_white_space_with_char()
 
     def get_next_token(self):
-        if not self.read_again:
-            self.current_char = self.reader.read_next_char()
-        else:
-            self.read_again = True
-        if self.current_char is None:
-            return None
+        while True:
+            if not self.read_again:
+                self.current_char = self.reader.read_next_char()
+            else:
+                self.read_again = False
+                if self.current_char
+                    return self.current_token_lexeme
+
+
+            if self.current_char is None:
+                return None
+
+            self.update_state()
