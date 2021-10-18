@@ -47,4 +47,4 @@ class SymbolWriter(Writer):
 
     def write_symbols(self, symbol_list):
         for index in range(len(symbol_list)):
-            self.file.write(str(index) + '.\t' + symbol_list[index] + '\n')
+            self.file.write(str(index + 1) + '.\t' + symbol_list[index] + '\n')

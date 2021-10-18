@@ -17,6 +17,8 @@ class Scanner:
                           'lcmt': 'COMMENT', 'wspace': 'WHITESPACE', 'star': 'SYMBOL'}
 
     def __init__(self):
+        self.token_found_return = False
+        self.finished = False
         self.read_again = False
         self.lineno = 1
         self.current_index = 0
@@ -28,7 +30,6 @@ class Scanner:
         self.error_writer = fw.ErrorWriter()
         self.symbol_writer = fw.SymbolWriter()
         self.id_list = []
-        self.finished = False
 
     def update_start_with_char(self):
         if re.search(Scanner.digit, self.current_char):
@@ -149,6 +150,27 @@ class Scanner:
             self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
             self.current_token_lexeme = ''
 
+    def update_symbol_with_char(self):
+        if re.search(Scanner.digit, self.current_char):
+            self.reset_state_return()
+        elif re.search(Scanner.letter, self.current_char):
+            self.reset_state_return()
+        elif re.search(Scanner.symbol, self.current_char):
+            self.reset_state_return()
+        elif re.search('=', self.current_char):
+            self.reset_state_return()
+        elif re.search('\*', self.current_char):
+            self.reset_state_return()
+        elif re.search('/', self.current_char):
+            self.reset_state_return()
+        elif re.search(Scanner.wspace, self.current_char):
+            self.reset_state_return()
+        else:
+            self.current_state = 'start'
+            self.current_token_lexeme += self.current_char
+            self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
+            self.current_token_lexeme = ''
+
     def update_slash_with_char(self):
         if re.search(Scanner.digit, self.current_char):
             self.current_state = 'start'
@@ -168,6 +190,7 @@ class Scanner:
             self.current_token_lexeme = ''
         elif re.search('\*', self.current_char):
             self.current_state = 'bcmt'
+            print('asb')
             self.current_token_lexeme += self.current_char
         elif re.search('/', self.current_char):
             self.current_state = 'lcmt'
@@ -205,6 +228,7 @@ class Scanner:
             self.current_token_lexeme += self.current_char
         elif re.search('/', self.current_char):
             self.reset_state_return()
+            self.read_again = False
         elif re.search(Scanner.wspace, self.current_char):
             self.current_state = 'bcmt'
             self.current_token_lexeme += self.current_char
@@ -274,6 +298,8 @@ class Scanner:
             self.update_equal_with_char()
         elif self.current_state == 'twoequal':
             self.update_two_equal_with_char()
+        elif self.current_state == 'symbol':
+            self.update_symbol_with_char()
         elif self.current_state == 'slash':
             self.update_slash_with_char()
         elif self.current_state == 'bcmt':
@@ -288,16 +314,18 @@ class Scanner:
             self.update_star_with_char()
 
     def reset_state_return(self):
+        self.read_again = True
         self.state_to_return = self.current_state
         self.current_state = 'start'
-        self.read_again = True
+        self.token_found_return = True
 
-    def generate_token_type(self):
+    def generate_token_type(self, temp_lexeme):
         if self.state_to_return == 'word':
-            if self.current_token_lexeme in self.keyword_reference_list:
+            if temp_lexeme in self.keyword_reference_list:
                 return 'KEYWORD'
             else:
-                self.id_list.append(self.current_token_lexeme)
+                if temp_lexeme not in self.id_list:
+                    self.id_list.append(temp_lexeme)
                 return 'ID'
         else:
             return self.type_by_state_name[self.state_to_return]
@@ -308,15 +336,20 @@ class Scanner:
         else:
             while True:
                 # Read next character
-                if not self.read_again:
-                    self.current_char = self.reader.read_next_char()
-                    if self.current_char == '\n':
-                        self.lineno += 1
+                if not self.token_found_return:
+                    if not self.read_again:
+                        self.current_char = self.reader.read_next_char()
+                        if self.current_char == '\n':
+                            self.lineno += 1
+                    else:
+                        self.read_again = False
                 # Return the newly-found token
                 else:
-                    self.read_again = False
+                    self.token_found_return = False
+                    temp_lexeme = self.current_token_lexeme
+                    self.current_token_lexeme = ''
                     if self.state_to_return not in ['bcmt', 'bcmt*', 'lcmt', 'wspace']:
-                        return '(' + self.generate_token_type() + ', ' + self.current_token_lexeme + ')'
+                        return '(' + self.generate_token_type(temp_lexeme) + ', ' + temp_lexeme + ')'
 
                 # Return none if the file has ended
                 if len(self.current_char) == 0:
