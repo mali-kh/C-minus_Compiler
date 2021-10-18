@@ -32,10 +32,6 @@ class TokenWriter(Writer):
         super().__init__('tokens.txt')
         self.lineno = 0
 
-    def next_line(self):
-        self.lineno += 1
-        self.file.write(str(self.lineno) + '.\t')
-
     def write_token(self, lineno, token_string):
         if self.lineno != lineno:
             if self.lineno != 0:
