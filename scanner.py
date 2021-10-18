@@ -291,8 +291,13 @@ class Scanner:
         self.read_again = True
 
     def generate_token_type(self):
-        if self.state_to_return in []: #TODO dododododododododododo
-            pass
+        if self.state_to_return == 'word':
+            if current_token_lexeme in keyword_reference_list:
+                return 'KEYWORD'
+            else:
+                return 'ID'
+        else
+            return self.type_by_state_name[self.state_to_return]
 
     def get_next_token(self):
         while True:
@@ -302,8 +307,8 @@ class Scanner:
             #Return the newly-found token
             else:
                 self.read_again = False
-                return '(' + self.generate_token_type() + ', ' self.current_token_lexeme + ')'
-                #TODO dodododo
+                if state_to_return not in ['bcmt', 'bcmt*', 'lcmt', 'wspace']
+                    return '(' + self.generate_token_type() + ', ' self.current_token_lexeme + ')'
 
             #Return none if the file has ended
             if self.current_char is None:
