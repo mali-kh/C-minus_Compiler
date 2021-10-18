@@ -11,6 +11,8 @@ class Scanner:
     symbol = '[;:,\[\]\(\)\{\}\+\-<]'
     wspace = '[ \n\r\t\v\f]'
 
+    keyword_reference_list = []
+
     type_by_state_name = {'num': , 'word': , 'equal': , 'twoequal': , 'symbol': , 'bcmt*': , 'lcmt': , 'wspace': , 'star': }
 
     def __init__(self):
