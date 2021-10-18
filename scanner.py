@@ -26,6 +26,8 @@ class Scanner:
         self.reader = fr.Reader()
         self.error_writer = fw.ErrorWriter()
         self.symbol_writer = fw.SymbolWriter()
+        self.id_list = []
+        self.finished = False
 
     def update_start_with_char(self):
         if re.search(self.current_char, Scanner.digit):
@@ -295,24 +297,33 @@ class Scanner:
             if current_token_lexeme in keyword_reference_list:
                 return 'KEYWORD'
             else:
+                id_list.append(current_token_lexeme)
                 return 'ID'
         else
             return self.type_by_state_name[self.state_to_return]
 
     def get_next_token(self):
-        while True:
-            #Read next character
-            if not self.read_again:
-                self.current_char = self.reader.read_next_char()
-            #Return the newly-found token
-            else:
-                self.read_again = False
-                if state_to_return not in ['bcmt', 'bcmt*', 'lcmt', 'wspace']
-                    return '(' + self.generate_token_type() + ', ' self.current_token_lexeme + ')'
+        if finished
+            return none
+        else
+            while True:
+                #Read next character
+                if not self.read_again:
+                    self.current_char = self.reader.read_next_char()
+                #Return the newly-found token
+                else:
+                    self.read_again = False
+                    if state_to_return not in ['bcmt', 'bcmt*', 'lcmt', 'wspace']
+                        return '(' + self.generate_token_type() + ', ' self.current_token_lexeme + ')'
 
-            #Return none if the file has ended
-            if self.current_char is None:
-                return None
+                #Return none if the file has ended
+                if self.current_char is None:
+                    reader.close_file()
+                    symbol_writer.write_symbols(keyword_reference_list.append(id_list))
+                    finished = True
+                    error_writer.close()
+                    symbol_writer.close()
+                    return None
 
-            #Call the method to update the state and construct the token
-            self.update_state()
+                #Call the method to update the state and construct the token
+                self.update_state()
