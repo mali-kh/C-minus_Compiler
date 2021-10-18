@@ -31,25 +31,25 @@ class Scanner:
         self.finished = False
 
     def update_start_with_char(self):
-        if re.search(self.current_char, Scanner.digit):
+        if re.search(Scanner.digit, self.current_char):
             self.current_state = 'num'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, Scanner.letter):
+        elif re.search(Scanner.letter, self.current_char):
             self.current_state = 'word'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, Scanner.symbol):
+        elif re.search(Scanner.symbol, self.current_char):
             self.current_state = 'symbol'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, '='):
+        elif re.search('=', self.current_char):
             self.current_state = 'equal'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, '\*'):
+        elif re.search('\*', self.current_char):
             self.current_state = 'star'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, '/'):
+        elif re.search('/', self.current_char):
             self.current_state = 'slash'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, Scanner.wspace):
+        elif re.search(Scanner.wspace, self.current_char):
             self.current_state = 'wspace'
             self.current_token_lexeme += self.current_char
         else:
@@ -59,23 +59,23 @@ class Scanner:
             self.current_token_lexeme = ''
 
     def update_num_with_char(self):
-        if re.search(self.current_char, Scanner.digit):
+        if re.search(Scanner.digit, self.current_char):
             self.current_state = 'num'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, Scanner.letter):
+        elif re.search(Scanner.letter, self.current_char):
             self.current_state = 'start'
             self.current_token_lexeme += self.current_char
             self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid number)')
             self.current_token_lexeme = ''
-        elif re.search(self.current_char, Scanner.symbol):
+        elif re.search(Scanner.symbol, self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '='):
+        elif re.search('=', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '\*'):
+        elif re.search('\*', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '/'):
+        elif re.search('/', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, Scanner.wspace):
+        elif re.search(Scanner.wspace, self.current_char):
             self.reset_state_return()
         else:
             self.current_state = 'start'
@@ -84,21 +84,21 @@ class Scanner:
             self.current_token_lexeme = ''
 
     def update_word_with_char(self):
-        if re.search(self.current_char, Scanner.digit):
+        if re.search(Scanner.digit, self.current_char):
             self.current_state = 'word'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, Scanner.letter):
+        elif re.search(Scanner.letter, self.current_char):
             self.current_state = 'word'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, Scanner.symbol):
+        elif re.search(Scanner.symbol, self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '='):
+        elif re.search('=', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '\*'):
+        elif re.search('\*', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '/'):
+        elif re.search('/', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, Scanner.wspace):
+        elif re.search(Scanner.wspace, self.current_char):
             self.reset_state_return()
         else:
             self.current_state = 'start'
@@ -107,20 +107,20 @@ class Scanner:
             self.current_token_lexeme = ''
 
     def update_equal_with_char(self):
-        if re.search(self.current_char, Scanner.digit):
+        if re.search(Scanner.digit, self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, Scanner.letter):
+        elif re.search(Scanner.letter, self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, Scanner.symbol):
+        elif re.search(Scanner.symbol, self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '='):
+        elif re.search('=', self.current_char):
             self.current_state = 'twoequal'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, '\*'):
+        elif re.search('\*', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '/'):
+        elif re.search('/', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, Scanner.wspace):
+        elif re.search(Scanner.wspace, self.current_char):
             self.reset_state_return()
         else:
             self.current_state = 'start'
@@ -129,19 +129,19 @@ class Scanner:
             self.current_token_lexeme = ''
 
     def update_two_equal_with_char(self):
-        if re.search(self.current_char, Scanner.digit):
+        if re.search(Scanner.digit, self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, Scanner.letter):
+        elif re.search(Scanner.letter, self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, Scanner.symbol):
+        elif re.search(Scanner.symbol, self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '='):
+        elif re.search('=', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '\*'):
+        elif re.search('\*', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '/'):
+        elif re.search('/', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, Scanner.wspace):
+        elif re.search(Scanner.wspace, self.current_char):
             self.reset_state_return()
         else:
             self.current_state = 'start'
@@ -150,29 +150,29 @@ class Scanner:
             self.current_token_lexeme = ''
 
     def update_slash_with_char(self):
-        if re.search(self.current_char, Scanner.digit):
+        if re.search(Scanner.digit, self.current_char):
             self.current_state = 'start'
             self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
             self.current_token_lexeme = ''
-        elif re.search(self.current_char, Scanner.letter):
+        elif re.search(Scanner.letter, self.current_char):
             self.current_state = 'start'
             self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
             self.current_token_lexeme = ''
-        elif re.search(self.current_char, Scanner.symbol):
+        elif re.search(Scanner.symbol, self.current_char):
             self.current_state = 'start'
             self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
             self.current_token_lexeme = ''
-        elif re.search(self.current_char, '='):
+        elif re.search('=', self.current_char):
             self.current_state = 'start'
             self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
             self.current_token_lexeme = ''
-        elif re.search(self.current_char, '\*'):
+        elif re.search('\*', self.current_char):
             self.current_state = 'bcmt'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, '/'):
+        elif re.search('/', self.current_char):
             self.current_state = 'lcmt'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, Scanner.wspace):
+        elif re.search(Scanner.wspace, self.current_char):
             self.current_state = 'start'
             self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
             self.current_token_lexeme = ''
@@ -184,28 +184,28 @@ class Scanner:
 
     def update_bcmt_with_char(self):
         self.current_token_lexeme += self.current_char
-        if re.search(self.current_char, '\*'):
+        if re.search('\*', self.current_char):
             self.current_state = 'bcmt*'
 
     def update_bcmt_star_with_char(self):
-        if re.search(self.current_char, Scanner.digit):
+        if re.search(Scanner.digit, self.current_char):
             self.current_state = 'bcmt'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, Scanner.letter):
+        elif re.search(Scanner.letter, self.current_char):
             self.current_state = 'bcmt'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, Scanner.symbol):
+        elif re.search(Scanner.symbol, self.current_char):
             self.current_state = 'bcmt'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, '='):
+        elif re.search('=', self.current_char):
             self.current_state = 'bcmt'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, '\*'):
+        elif re.search('\*', self.current_char):
             self.current_state = 'bcmt*'
             self.current_token_lexeme += self.current_char
-        elif re.search(self.current_char, '/'):
+        elif re.search('/', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, Scanner.wspace):
+        elif re.search(Scanner.wspace, self.current_char):
             self.current_state = 'bcmt'
             self.current_token_lexeme += self.current_char
         else:
@@ -213,25 +213,25 @@ class Scanner:
             self.current_token_lexeme += self.current_char
 
     def update_lcmt_with_char(self):
-        if re.search(self.current_char, '\n'):
+        if re.search('\n', self.current_char):
             self.reset_state_return()
         else:
             self.current_token_lexeme += self.current_char
 
     def update_white_space_with_char(self):
-        if re.search(self.current_char, Scanner.digit):
+        if re.search(Scanner.digit, self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, Scanner.letter):
+        elif re.search(Scanner.letter, self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, Scanner.symbol):
+        elif re.search(Scanner.symbol, self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '='):
+        elif re.search('=', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '\*'):
+        elif re.search('\*', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '/'):
+        elif re.search('/', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, Scanner.wspace):
+        elif re.search(Scanner.wspace, self.current_char):
             self.current_state = 'wspace'
             self.current_token_lexeme += self.current_char
         else:
@@ -240,22 +240,22 @@ class Scanner:
             self.current_token_lexeme = ''
 
     def update_star_with_char(self):
-        if re.search(self.current_char, Scanner.digit):
+        if re.search(Scanner.digit, self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, Scanner.letter):
+        elif re.search(Scanner.letter, self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, Scanner.symbol):
+        elif re.search(Scanner.symbol, self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '='):
+        elif re.search('=', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '\*'):
+        elif re.search('\*', self.current_char):
             self.reset_state_return()
-        elif re.search(self.current_char, '/'):
+        elif re.search('/', self.current_char):
             self.current_state = 'start'
             self.current_token_lexeme += self.current_char
             self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Unmatched comment)')
             self.current_token_lexeme = ''
-        elif re.search(self.current_char, Scanner.wspace):
+        elif re.search(Scanner.wspace, self.current_char):
             self.reset_state_return()
         else:
             self.current_state = 'start'
