@@ -13,7 +13,8 @@ class Scanner:
 
     keyword_reference_list = ['if', 'else', 'void', 'int', 'repeat', 'break', 'until', 'return']
 
-    type_by_state_name = {'num': 'NUM', 'equal': 'SYMBOL', 'twoequal': 'SYMBOL', 'symbol': 'SYMBOL', 'bcmt*': 'COMMENT', 'lcmt': 'COMMENT', 'wspace': 'WHITESPACE', 'star': 'SYMBOL'}
+    type_by_state_name = {'num': 'NUM', 'equal': 'SYMBOL', 'twoequal': 'SYMBOL', 'symbol': 'SYMBOL', 'bcmt*': 'COMMENT',
+                          'lcmt': 'COMMENT', 'wspace': 'WHITESPACE', 'star': 'SYMBOL'}
 
     def __init__(self):
         self.read_again = False
@@ -21,7 +22,7 @@ class Scanner:
         self.current_index = 0
         self.current_char = ''
         self.current_state = 'start'
-        self.state_to_return
+        self.state_to_return = ''
         self.current_token_lexeme = ''
         self.reader = fr.Reader()
         self.error_writer = fw.ErrorWriter()
@@ -262,7 +263,6 @@ class Scanner:
             self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
             self.current_token_lexeme = ''
 
-
     def update_state(self):
         if self.current_state == 'start':
             self.update_start_with_char()
@@ -294,36 +294,38 @@ class Scanner:
 
     def generate_token_type(self):
         if self.state_to_return == 'word':
-            if current_token_lexeme in keyword_reference_list:
+            if self.current_token_lexeme in self.keyword_reference_list:
                 return 'KEYWORD'
             else:
-                id_list.append(current_token_lexeme)
+                self.id_list.append(self.current_token_lexeme)
                 return 'ID'
-        else
+        else:
             return self.type_by_state_name[self.state_to_return]
 
     def get_next_token(self):
-        if finished
-            return none
-        else
+        if self.finished:
+            return None
+        else:
             while True:
-                #Read next character
+                # Read next character
                 if not self.read_again:
                     self.current_char = self.reader.read_next_char()
-                #Return the newly-found token
+                    if self.current_char == '\n':
+                        self.lineno += 1
+                # Return the newly-found token
                 else:
                     self.read_again = False
-                    if state_to_return not in ['bcmt', 'bcmt*', 'lcmt', 'wspace']
-                        return '(' + self.generate_token_type() + ', ' self.current_token_lexeme + ')'
+                    if self.state_to_return not in ['bcmt', 'bcmt*', 'lcmt', 'wspace']:
+                        return '(' + self.generate_token_type() + ', ' + self.current_token_lexeme + ')'
 
-                #Return none if the file has ended
-                if self.current_char is None:
-                    reader.close_file()
-                    symbol_writer.write_symbols(keyword_reference_list.append(id_list))
-                    finished = True
-                    error_writer.close()
-                    symbol_writer.close()
+                # Return none if the file has ended
+                if len(self.current_char) == 0:
+                    self.reader.close_file()
+                    self.symbol_writer.write_symbols(self.keyword_reference_list + self.id_list)
+                    self.finished = True
+                    self.error_writer.close()
+                    self.symbol_writer.close()
                     return None
 
-                #Call the method to update the state and construct the token
+                # Call the method to update the state and construct the token
                 self.update_state()
