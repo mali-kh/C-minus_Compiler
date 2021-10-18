@@ -11,9 +11,9 @@ class Scanner:
     symbol = '[;:,\[\]\(\)\{\}\+\-<]'
     wspace = '[ \n\r\t\v\f]'
 
-    keyword_reference_list = []
+    keyword_reference_list = ['if', 'else', 'void', 'int', 'repeat', 'break', 'until', 'return']
 
-    type_by_state_name = {'num': , 'word': , 'equal': , 'twoequal': , 'symbol': , 'bcmt*': , 'lcmt': , 'wspace': , 'star': }
+    type_by_state_name = {'num': 'NUM', 'equal': 'SYMBOL', 'twoequal': 'SYMBOL', 'symbol': 'SYMBOL', 'bcmt*': 'COMMENT', 'lcmt': 'COMMENT', 'wspace': 'WHITESPACE', 'star': 'SYMBOL'}
 
     def __init__(self):
         self.read_again = False
@@ -290,6 +290,10 @@ class Scanner:
         self.current_state = 'start'
         self.read_again = True
 
+    def generate_token_type(self):
+        if self.state_to_return in []: #TODO dododododododododododo
+            pass
+
     def get_next_token(self):
         while True:
             #Read next character
@@ -298,7 +302,7 @@ class Scanner:
             #Return the newly-found token
             else:
                 self.read_again = False
-                return '(' + self.current_token_lexeme
+                return '(' + self.generate_token_type() + ', ' self.current_token_lexeme + ')'
                 #TODO dodododo
 
             #Return none if the file has ended
