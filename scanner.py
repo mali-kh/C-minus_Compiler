@@ -11,12 +11,15 @@ class Scanner:
     symbol = '[;:,\[\]\(\)\{\}\+\-<]'
     wspace = '[ \n\r\t\v\f]'
 
+    type_by_state_name = {'num': , 'word': , 'equal': , 'twoequal': , 'symbol': , 'bcmt*': , 'lcmt': , 'wspace': , 'star': }
+
     def __init__(self):
         self.read_again = False
         self.lineno = 1
         self.current_index = 0
         self.current_char = ''
         self.current_state = 'start'
+        self.state_to_return
         self.current_token_lexeme = ''
         self.reader = fr.Reader()
         self.error_writer = fw.ErrorWriter()
@@ -60,20 +63,15 @@ class Scanner:
             self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid number)')
             self.current_token_lexeme = ''
         elif re.search(self.current_char, Scanner.symbol):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, '='):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, '\*'):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, '/'):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, Scanner.wspace):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         else:
             self.current_state = 'start'
             self.current_token_lexeme += self.current_char
@@ -88,20 +86,15 @@ class Scanner:
             self.current_state = 'word'
             self.current_token_lexeme += self.current_char
         elif re.search(self.current_char, Scanner.symbol):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, '='):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, '\*'):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, '/'):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, Scanner.wspace):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         else:
             self.current_state = 'start'
             self.current_token_lexeme += self.current_char
@@ -110,26 +103,20 @@ class Scanner:
 
     def update_equal_with_char(self):
         if re.search(self.current_char, Scanner.digit):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, Scanner.letter):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, Scanner.symbol):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, '='):
             self.current_state = 'twoequal'
             self.current_token_lexeme += self.current_char
         elif re.search(self.current_char, '\*'):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, '/'):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, Scanner.wspace):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         else:
             self.current_state = 'start'
             self.current_token_lexeme += self.current_char
@@ -138,26 +125,19 @@ class Scanner:
 
     def update_two_equal_with_char(self):
         if re.search(self.current_char, Scanner.digit):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, Scanner.letter):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, Scanner.symbol):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, '='):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, '\*'):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, '/'):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, Scanner.wspace):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         else:
             self.current_state = 'start'
             self.current_token_lexeme += self.current_char
@@ -219,8 +199,7 @@ class Scanner:
             self.current_state = 'bcmt*'
             self.current_token_lexeme += self.current_char
         elif re.search(self.current_char, '/'):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, Scanner.wspace):
             self.current_state = 'bcmt'
             self.current_token_lexeme += self.current_char
@@ -230,30 +209,23 @@ class Scanner:
 
     def update_lcmt_with_char(self):
         if re.search(self.current_char, '\n'):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         else:
             self.current_token_lexeme += self.current_char
 
     def update_white_space_with_char(self):
         if re.search(self.current_char, Scanner.digit):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, Scanner.letter):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, Scanner.symbol):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, '='):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, '\*'):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, '/'):
-            self.current_state = 'start'
-            self.read_again = True
+            self.reset_state_return()
         elif re.search(self.current_char, Scanner.wspace):
             self.current_state = 'wspace'
             self.current_token_lexeme += self.current_char
@@ -261,6 +233,31 @@ class Scanner:
             self.current_state = 'start'
             self.error_writer.write_error(self.lineno, '(' + self.current_char + ', Invalid input)')
             self.current_token_lexeme = ''
+
+    def update_star_with_char(self):
+        if re.search(self.current_char, Scanner.digit):
+            self.reset_state_return()
+        elif re.search(self.current_char, Scanner.letter):
+            self.reset_state_return()
+        elif re.search(self.current_char, Scanner.symbol):
+            self.reset_state_return()
+        elif re.search(self.current_char, '='):
+            self.reset_state_return()
+        elif re.search(self.current_char, '\*'):
+            self.reset_state_return()
+        elif re.search(self.current_char, '/'):
+            self.current_state = 'start'
+            self.current_token_lexeme += self.current_char
+            self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Unmatched comment)')
+            self.current_token_lexeme = ''
+        elif re.search(self.current_char, Scanner.wspace):
+            self.reset_state_return()
+        else:
+            self.current_state = 'start'
+            self.current_token_lexeme += self.current_char
+            self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
+            self.current_token_lexeme = ''
+
 
     def update_state(self):
         if self.current_state == 'start':
@@ -283,18 +280,28 @@ class Scanner:
             self.update_lcmt_with_char()
         elif self.current_state == 'wspace':
             self.update_white_space_with_char()
+        elif self.current_state == 'star':
+            self.update_star_with_char()
+
+    def reset_state_return(self):
+        self.state_to_return = self.current_state
+        self.current_state = 'start'
+        self.read_again = True
 
     def get_next_token(self):
         while True:
+            #Read next character
             if not self.read_again:
                 self.current_char = self.reader.read_next_char()
+            #Return the newly-found token
             else:
                 self.read_again = False
-                if self.current_char
-                    return self.current_token_lexeme
+                return '(' + self.current_token_lexeme
+                #TODO dodododo
 
-
+            #Return none if the file has ended
             if self.current_char is None:
                 return None
 
+            #Call the method to update the state and construct the token
             self.update_state()
