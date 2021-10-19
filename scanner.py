@@ -195,7 +195,6 @@ class Scanner:
             self.current_token_lexeme = ''
         elif re.search('\*', self.current_char):
             self.current_state = 'bcmt'
-            print('asb')
             self.current_token_lexeme += self.current_char
         elif re.search('/', self.current_char):
             self.current_state = 'lcmt'
