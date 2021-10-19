@@ -10,13 +10,4 @@ while True:
     next_token = scanner.get_next_token()
     if next_token is None:
         break
-    token_writer.write_token(scanner.lineno, next_token)
-    # print(scanner.lineno)
-
-# symbol = '[;:,\[\]\(\)\{\}\+\-<]'
-# if re.search(symbol, '('):
-#     print('sag')
-
-# reader = fr.Reader()
-# while True:
-#     print(reader.read_next_char(), end='')
+    token_writer.write_token(scanner.get_lineno(), next_token)

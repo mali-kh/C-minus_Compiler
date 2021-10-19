@@ -20,7 +20,10 @@ class Scanner:
         self.token_found_return = False
         self.finished = False
         self.read_again = False
+        self.skip_one_char = False
+        self.go_to_next_line = False
         self.lineno = 1
+        self.temporary_lineno = 1
         self.current_index = 0
         self.current_char = ''
         self.current_state = 'start'
@@ -52,6 +55,8 @@ class Scanner:
             self.current_token_lexeme += self.current_char
         elif re.search(Scanner.wspace, self.current_char):
             self.current_state = 'wspace'
+            if self.current_char == '\n':
+                self.lineno += 1
             self.current_token_lexeme += self.current_char
         else:
             self.current_state = 'start'
@@ -207,6 +212,8 @@ class Scanner:
 
     def update_bcmt_with_char(self):
         self.current_token_lexeme += self.current_char
+        if self.current_char == '\n':
+            self.lineno += 1
         if re.search('\*', self.current_char):
             self.current_state = 'bcmt*'
 
@@ -228,7 +235,7 @@ class Scanner:
             self.current_token_lexeme += self.current_char
         elif re.search('/', self.current_char):
             self.reset_state_return()
-            self.read_again = False
+            self.skip_one_char = True
         elif re.search(Scanner.wspace, self.current_char):
             self.current_state = 'bcmt'
             self.current_token_lexeme += self.current_char
@@ -257,6 +264,8 @@ class Scanner:
             self.reset_state_return()
         elif re.search(Scanner.wspace, self.current_char):
             self.current_state = 'wspace'
+            if self.current_char == '\n':
+                self.lineno += 1
             self.current_token_lexeme += self.current_char
         else:
             self.current_state = 'start'
@@ -314,7 +323,6 @@ class Scanner:
             self.update_star_with_char()
 
     def reset_state_return(self):
-        self.read_again = True
         self.state_to_return = self.current_state
         self.current_state = 'start'
         self.token_found_return = True
@@ -330,29 +338,40 @@ class Scanner:
         else:
             return self.type_by_state_name[self.state_to_return]
 
+    def get_lineno(self):
+        return self.temporary_lineno
+
     def get_next_token(self):
         if self.finished:
             return None
         else:
             while True:
+                # Go to next line
+                # if self.go_to_next_line:
+                #     self.temporary_lineno += 1
+                #     self.go_to_next_line = False
                 # Read next character
                 if not self.token_found_return:
                     if not self.read_again:
                         self.current_char = self.reader.read_next_char()
-                        if self.current_char == '\n':
-                            self.lineno += 1
                     else:
                         self.read_again = False
                 # Return the newly-found token
                 else:
                     self.token_found_return = False
                     temp_lexeme = self.current_token_lexeme
+                    self.temporary_lineno = self.lineno
                     self.current_token_lexeme = ''
                     if self.state_to_return not in ['bcmt', 'bcmt*', 'lcmt', 'wspace']:
+                        self.read_again = True
                         return '(' + self.generate_token_type(temp_lexeme) + ', ' + temp_lexeme + ')'
+                    elif self.state_to_return == 'bcmt*':
+                        continue
 
                 # Return none if the file has ended
                 if len(self.current_char) == 0:
+                    if self.current_state in ['bcmt', 'bcmt*']:
+                        self.error_writer.write_error(self.temporary_lineno, '(' + self.current_token_lexeme[0:7] + '..., Unclosed comment)')
                     self.reader.close_file()
                     self.symbol_writer.write_symbols(self.keyword_reference_list + self.id_list)
                     self.finished = True
