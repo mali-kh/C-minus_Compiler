@@ -22,6 +22,7 @@ class Scanner:
         self.read_again = False
         self.skip_one_char = False
         self.go_to_next_line = False
+        self.file_finished_final_round = False
         self.lineno = 1
         self.temporary_lineno = 1
         self.current_index = 0
@@ -53,7 +54,7 @@ class Scanner:
         elif re.search('/', self.current_char):
             self.current_state = 'slash'
             self.current_token_lexeme += self.current_char
-        elif re.search(Scanner.wspace, self.current_char):
+        elif re.search(Scanner.wspace, self.current_char) or self.current_char == '':
             self.current_state = 'wspace'
             if self.current_char == '\n':
                 self.lineno += 1
@@ -81,7 +82,7 @@ class Scanner:
             self.reset_state_return()
         elif re.search('/', self.current_char):
             self.reset_state_return()
-        elif re.search(Scanner.wspace, self.current_char):
+        elif re.search(Scanner.wspace, self.current_char) or self.current_char == '':
             self.reset_state_return()
         else:
             self.current_state = 'start'
@@ -104,7 +105,7 @@ class Scanner:
             self.reset_state_return()
         elif re.search('/', self.current_char):
             self.reset_state_return()
-        elif re.search(Scanner.wspace, self.current_char):
+        elif re.search(Scanner.wspace, self.current_char) or self.current_char == '':
             self.reset_state_return()
         else:
             self.current_state = 'start'
@@ -126,7 +127,7 @@ class Scanner:
             self.reset_state_return()
         elif re.search('/', self.current_char):
             self.reset_state_return()
-        elif re.search(Scanner.wspace, self.current_char):
+        elif re.search(Scanner.wspace, self.current_char) or self.current_char == '':
             self.reset_state_return()
         else:
             self.current_state = 'start'
@@ -147,7 +148,7 @@ class Scanner:
             self.reset_state_return()
         elif re.search('/', self.current_char):
             self.reset_state_return()
-        elif re.search(Scanner.wspace, self.current_char):
+        elif re.search(Scanner.wspace, self.current_char) or self.current_char == '':
             self.reset_state_return()
         else:
             self.current_state = 'start'
@@ -168,15 +169,17 @@ class Scanner:
             self.reset_state_return()
         elif re.search('/', self.current_char):
             self.reset_state_return()
-        elif re.search(Scanner.wspace, self.current_char):
+        elif re.search(Scanner.wspace, self.current_char) or self.current_char == '':
             self.reset_state_return()
         else:
-            self.current_state = 'start'
-            self.current_token_lexeme += self.current_char
-            self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
-            self.current_token_lexeme = ''
+            self.reset_state_return()
+            # self.current_state = 'start'
+            # self.current_token_lexeme += self.current_char
+            # self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
+            # self.current_token_lexeme = ''
 
     def update_slash_with_char(self):
+        self.read_again = True
         if re.search(Scanner.digit, self.current_char):
             self.current_state = 'start'
             self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
@@ -196,10 +199,12 @@ class Scanner:
         elif re.search('\*', self.current_char):
             self.current_state = 'bcmt'
             self.current_token_lexeme += self.current_char
+            self.read_again = False
         elif re.search('/', self.current_char):
             self.current_state = 'lcmt'
             self.current_token_lexeme += self.current_char
-        elif re.search(Scanner.wspace, self.current_char):
+            self.read_again = False
+        elif re.search(Scanner.wspace, self.current_char) or self.current_char == '':
             self.current_state = 'start'
             self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
             self.current_token_lexeme = ''
@@ -235,7 +240,7 @@ class Scanner:
         elif re.search('/', self.current_char):
             self.reset_state_return()
             self.skip_one_char = True
-        elif re.search(Scanner.wspace, self.current_char):
+        elif re.search(Scanner.wspace, self.current_char) or self.current_char == '':
             self.current_state = 'bcmt'
             self.current_token_lexeme += self.current_char
         else:
@@ -259,7 +264,7 @@ class Scanner:
             self.reset_state_return()
         elif re.search('\*', self.current_char):
             self.reset_state_return()
-        elif re.search('/', self.current_char):
+        elif re.search('/', self.current_char) or self.current_char == '':
             self.reset_state_return()
         elif re.search(Scanner.wspace, self.current_char):
             self.current_state = 'wspace'
@@ -287,7 +292,7 @@ class Scanner:
             self.current_token_lexeme += self.current_char
             self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Unmatched comment)')
             self.current_token_lexeme = ''
-        elif re.search(Scanner.wspace, self.current_char):
+        elif re.search(Scanner.wspace, self.current_char) or self.current_char == '':
             self.reset_state_return()
         else:
             self.current_state = 'start'
@@ -345,10 +350,6 @@ class Scanner:
             return None
         else:
             while True:
-                # Go to next line
-                # if self.go_to_next_line:
-                #     self.temporary_lineno += 1
-                #     self.go_to_next_line = False
                 # Read next character
                 if not self.token_found_return:
                     if not self.read_again:
@@ -368,7 +369,7 @@ class Scanner:
                         continue
 
                 # Return none if the file has ended
-                if len(self.current_char) == 0:
+                if self.file_finished_final_round:
                     if self.current_state in ['bcmt', 'bcmt*']:
                         self.error_writer.write_error(self.temporary_lineno, '(' + self.current_token_lexeme[0:7] + '..., Unclosed comment)')
                     self.reader.close_file()
@@ -377,6 +378,9 @@ class Scanner:
                     self.error_writer.close()
                     self.symbol_writer.close()
                     return None
+                # Check if it's time for final round
+                if len(self.current_char) == 0:
+                    self.file_finished_final_round = True
 
                 # Call the method to update the state and construct the token
                 self.update_state()
