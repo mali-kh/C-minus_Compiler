@@ -86,7 +86,7 @@ class Scanner:
         else:
             self.current_state = 'start'
             self.current_token_lexeme += self.current_char
-            self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
+            self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid number)')
             self.current_token_lexeme = ''
 
     def update_word_with_char(self):
@@ -212,6 +212,7 @@ class Scanner:
             self.current_token_lexeme += self.current_char
             self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
             self.current_token_lexeme = ''
+            self.read_again = False
 
     def update_bcmt_with_char(self):
         self.current_token_lexeme += self.current_char
