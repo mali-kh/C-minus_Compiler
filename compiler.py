@@ -1,7 +1,5 @@
 import scanner
 import FileManager.file_writer as fw
-import FileManager.file_reader as fr
-import re
 
 scanner = scanner.Scanner()
 token_writer = fw.TokenWriter()
