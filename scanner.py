@@ -35,7 +35,12 @@ class Scanner:
         self.id_list = []
 
     def update_start_with_char(self):
-        if Scanner.digit.__contains__(self.current_char):
+        if Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
+            self.current_state = 'wspace'
+            if self.current_char == '\n':
+                self.lineno += 1
+            self.current_token_lexeme += self.current_char
+        elif Scanner.digit.__contains__(self.current_char):
             self.current_state = 'num'
             self.current_token_lexeme += self.current_char
         elif Scanner.letter.__contains__(self.current_char):
@@ -53,11 +58,6 @@ class Scanner:
         elif '/'.__contains__(self.current_char):
             self.current_state = 'slash'
             self.current_token_lexeme += self.current_char
-        elif Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
-            self.current_state = 'wspace'
-            if self.current_char == '\n':
-                self.lineno += 1
-            self.current_token_lexeme += self.current_char
         else:
             self.current_state = 'start'
             self.current_token_lexeme += self.current_char
@@ -65,7 +65,9 @@ class Scanner:
             self.current_token_lexeme = ''
 
     def update_num_with_char(self):
-        if Scanner.digit.__contains__(self.current_char):
+        if Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
+            self.reset_state_return()
+        elif Scanner.digit.__contains__(self.current_char):
             self.current_state = 'num'
             self.current_token_lexeme += self.current_char
         elif Scanner.letter.__contains__(self.current_char):
@@ -81,8 +83,6 @@ class Scanner:
             self.reset_state_return()
         elif '/'.__contains__(self.current_char):
             self.reset_state_return()
-        elif Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
-            self.reset_state_return()
         else:
             self.current_state = 'start'
             self.current_token_lexeme += self.current_char
@@ -90,7 +90,9 @@ class Scanner:
             self.current_token_lexeme = ''
 
     def update_word_with_char(self):
-        if Scanner.digit.__contains__(self.current_char):
+        if Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
+            self.reset_state_return()
+        elif Scanner.digit.__contains__(self.current_char):
             self.current_state = 'word'
             self.current_token_lexeme += self.current_char
         elif Scanner.letter.__contains__(self.current_char):
@@ -104,8 +106,6 @@ class Scanner:
             self.reset_state_return()
         elif '/'.__contains__(self.current_char):
             self.reset_state_return()
-        elif Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
-            self.reset_state_return()
         else:
             self.current_state = 'start'
             self.current_token_lexeme += self.current_char
@@ -113,7 +113,9 @@ class Scanner:
             self.current_token_lexeme = ''
 
     def update_equal_with_char(self):
-        if Scanner.digit.__contains__(self.current_char):
+        if Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
+            self.reset_state_return()
+        elif Scanner.digit.__contains__(self.current_char):
             self.reset_state_return()
         elif Scanner.letter.__contains__(self.current_char):
             self.reset_state_return()
@@ -126,8 +128,6 @@ class Scanner:
             self.reset_state_return()
         elif '/'.__contains__(self.current_char):
             self.reset_state_return()
-        elif Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
-            self.reset_state_return()
         else:
             self.current_state = 'start'
             self.current_token_lexeme += self.current_char
@@ -135,7 +135,9 @@ class Scanner:
             self.current_token_lexeme = ''
 
     def update_two_equal_with_char(self):
-        if Scanner.digit.__contains__(self.current_char):
+        if Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
+            self.reset_state_return()
+        elif Scanner.digit.__contains__(self.current_char):
             self.reset_state_return()
         elif Scanner.letter.__contains__(self.current_char):
             self.reset_state_return()
@@ -146,8 +148,6 @@ class Scanner:
         elif '*'.__contains__(self.current_char):
             self.reset_state_return()
         elif '/'.__contains__(self.current_char):
-            self.reset_state_return()
-        elif Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
             self.reset_state_return()
         else:
             self.current_state = 'start'
@@ -156,7 +156,9 @@ class Scanner:
             self.current_token_lexeme = ''
 
     def update_symbol_with_char(self):
-        if Scanner.digit.__contains__(self.current_char):
+        if Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
+            self.reset_state_return()
+        elif Scanner.digit.__contains__(self.current_char):
             self.reset_state_return()
         elif Scanner.letter.__contains__(self.current_char):
             self.reset_state_return()
@@ -167,8 +169,6 @@ class Scanner:
         elif '*'.__contains__(self.current_char):
             self.reset_state_return()
         elif '/'.__contains__(self.current_char):
-            self.reset_state_return()
-        elif Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
             self.reset_state_return()
         else:
             self.reset_state_return()
@@ -179,7 +179,11 @@ class Scanner:
 
     def update_slash_with_char(self):
         self.read_again = True
-        if Scanner.digit.__contains__(self.current_char):
+        if Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
+            self.current_state = 'start'
+            self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
+            self.current_token_lexeme = ''
+        elif Scanner.digit.__contains__(self.current_char):
             self.current_state = 'start'
             self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
             self.current_token_lexeme = ''
@@ -203,10 +207,6 @@ class Scanner:
             self.current_state = 'lcmt'
             self.current_token_lexeme += self.current_char
             self.read_again = False
-        elif Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
-            self.current_state = 'start'
-            self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Invalid input)')
-            self.current_token_lexeme = ''
         else:
             self.current_state = 'start'
             self.current_token_lexeme += self.current_char
@@ -218,11 +218,14 @@ class Scanner:
         self.current_token_lexeme += self.current_char
         if self.current_char == '\n':
             self.lineno += 1
-        if '*'.__contains__(self.current_char):
+        if '*'.__contains__(self.current_char) and self.current_char != '':
             self.current_state = 'bcmt*'
 
     def update_bcmt_star_with_char(self):
-        if Scanner.digit.__contains__(self.current_char):
+        if Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
+            self.current_state = 'bcmt'
+            self.current_token_lexeme += self.current_char
+        elif Scanner.digit.__contains__(self.current_char):
             self.current_state = 'bcmt'
             self.current_token_lexeme += self.current_char
         elif Scanner.letter.__contains__(self.current_char):
@@ -240,9 +243,6 @@ class Scanner:
         elif '/'.__contains__(self.current_char):
             self.reset_state_return()
             self.skip_one_char = True
-        elif Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
-            self.current_state = 'bcmt'
-            self.current_token_lexeme += self.current_char
         else:
             self.current_state = 'bcmt'
             self.current_token_lexeme += self.current_char
@@ -254,7 +254,12 @@ class Scanner:
             self.current_token_lexeme += self.current_char
 
     def update_white_space_with_char(self):
-        if Scanner.digit.__contains__(self.current_char):
+        if Scanner.wspace.__contains__(self.current_char):
+            self.current_state = 'wspace'
+            if self.current_char == '\n':
+                self.lineno += 1
+            self.current_token_lexeme += self.current_char
+        elif Scanner.digit.__contains__(self.current_char):
             self.reset_state_return()
         elif Scanner.letter.__contains__(self.current_char):
             self.reset_state_return()
@@ -264,20 +269,18 @@ class Scanner:
             self.reset_state_return()
         elif '*'.__contains__(self.current_char):
             self.reset_state_return()
-        elif '/'.__contains__(self.current_char) or self.current_char == '':
+        # or self.current_char == ''?????
+        elif '/'.__contains__(self.current_char):
             self.reset_state_return()
-        elif Scanner.wspace.__contains__(self.current_char):
-            self.current_state = 'wspace'
-            if self.current_char == '\n':
-                self.lineno += 1
-            self.current_token_lexeme += self.current_char
         else:
             self.current_state = 'start'
             self.error_writer.write_error(self.lineno, '(' + self.current_char + ', Invalid input)')
             self.current_token_lexeme = ''
 
     def update_star_with_char(self):
-        if Scanner.digit.__contains__(self.current_char):
+        if Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
+            self.reset_state_return()
+        elif Scanner.digit.__contains__(self.current_char):
             self.reset_state_return()
         elif Scanner.letter.__contains__(self.current_char):
             self.reset_state_return()
@@ -292,8 +295,6 @@ class Scanner:
             self.current_token_lexeme += self.current_char
             self.error_writer.write_error(self.lineno, '(' + self.current_token_lexeme + ', Unmatched comment)')
             self.current_token_lexeme = ''
-        elif Scanner.wspace.__contains__(self.current_char) or self.current_char == '':
-            self.reset_state_return()
         else:
             self.current_state = 'start'
             self.current_token_lexeme += self.current_char
