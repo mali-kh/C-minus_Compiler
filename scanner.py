@@ -10,7 +10,8 @@ class Scanner:
     wspace = ' \n\r\t\v\f'
     valid_tokens = digit + letter + symbol + wspace + '/*'
 
-    keyword_reference_list = ['if', 'else', 'void', 'int', 'repeat', 'break', 'until', 'return']
+    # Also '$' but we won't add it here
+    keyword_reference_list = ['if', 'else', 'void', 'int', 'repeat', 'break', 'until', 'return', 'endif']
 
     type_by_state_name = {'num': 'NUM', 'equal': 'SYMBOL', 'twoequal': 'SYMBOL', 'symbol': 'SYMBOL', 'bcmt*': 'COMMENT',
                           'lcmt': 'COMMENT', 'wspace': 'WHITESPACE', 'star': 'SYMBOL'}
@@ -375,11 +376,11 @@ class Scanner:
                         self.error_writer.write_error(self.temporary_lineno,
                                                       '(' + self.current_token_lexeme[0:7] + '..., Unclosed comment)')
                     self.reader.close_file()
-                    self.symbol_writer.write_symbols(self.keyword_reference_list + self.id_list)
+                    self.symbol_writer.write_symbols(self.keyword_reference_list.append('$') + self.id_list)
                     self.finished = True
                     self.error_writer.close()
                     self.symbol_writer.close()
-                    return None
+                    return '(KEYWORD, $)'
                 # Check if it's time for final round
                 if len(self.current_char) == 0:
                     self.file_finished_final_round = True
