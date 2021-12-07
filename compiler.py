@@ -1,10 +1,11 @@
-import scanner
-import parser
 import FileManager.file_writer as fw
+import scanner
+import emperor_parser
+# from parser import Parser
 
-parser = parser.Parser()
-scanner = scanner.Scanner()
 token_writer = fw.TokenWriter()
+scanner = scanner.Scanner()
+parser = emperor_parser.Parser()
 # PAY ATTENTION TO THIS!!!
 do_scanner_only = True
 

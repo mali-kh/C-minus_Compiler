@@ -1,8 +1,8 @@
-import scanner
-
-
 class Parser:
     scany = None
+
+    def __init__(self):
+        self.scany = None
 
     def set_scanner(self, scanner_instance):
         self.scany = scanner_instance
