@@ -376,7 +376,7 @@ class Scanner:
                         self.error_writer.write_error(self.temporary_lineno,
                                                       '(' + self.current_token_lexeme[0:7] + '..., Unclosed comment)')
                     self.reader.close_file()
-                    self.symbol_writer.write_symbols(self.keyword_reference_list.append('$') + self.id_list)
+                    self.symbol_writer.write_symbols(self.keyword_reference_list + self.id_list)
                     self.finished = True
                     self.error_writer.close()
                     self.symbol_writer.close()
