@@ -99,7 +99,8 @@ class Parser:
                 'Arg-list-prime': [[','], [')']]
                 }
 
-    FOLLOWS = {'Declaration-list': ['$', '{', 'break', ';', 'if', 'repeat', 'return', 'ID', '(', 'NUM', '}'],
+    FOLLOWS = {'Program': [],
+               'Declaration-list': ['$', '{', 'break', ';', 'if', 'repeat', 'return', 'ID', '(', 'NUM', '}'],
                'Declaration': ['int', 'void', '$', '{', 'break', ';', 'if', 'repeat', 'return', 'ID', '(', 'NUM', '}'],
                'Declaration-initial': ['(', ';', '[', ',', ')'],
                'Declaration-prime': ['int', 'void', '$', '{', 'break', ';', 'if', 'repeat', 'return', 'ID', '(', 'NUM',
