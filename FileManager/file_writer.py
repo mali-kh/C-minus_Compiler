@@ -64,7 +64,7 @@ class SyntaxErrorWriter(Writer):
 
     def close(self):
         if not self.error_exists:
-            self.file.write('There is no lexical error.')
+            self.file.write('There is no syntax error.')
         super().close()
 
 
