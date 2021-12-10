@@ -1,3 +1,7 @@
+import scanner
+import anytree
+
+
 class Parser:
     PRODUCTIONS = {'Program': [['Declaration-list', '$']],
                    'Declaration-list': [['Declaration', 'Declaration-list'], ['EPSILON']],
@@ -198,8 +202,18 @@ class Parser:
               'Arg-list': ['ID', '(', 'NUM'],
               'Arg-list-prime': [',', 'EPSILON']
               }
+    NON_TERMINALS = ['Program', 'Declaration-list', 'Declaration', 'Declaration-initial', 'Declaration-prime',
+                     'Var-declaration-prime', 'Fun-declaration-prime', 'Type-specifier', 'Params', 'Param-list',
+                     'Param', 'Param-prime', 'Compound-stmt', 'Statement-list', 'Statement', 'Expression-stmt',
+                     'Selection-stmt', 'Else-stmt', 'Iteration-stmt', 'Return-stmt', 'Return-stmt-prime',
+                     'Expression', 'B', 'H', 'Simple-expression-zegond', 'Simple-expression-prime', 'C', 'Relop',
+                     'Additive-expression', 'Additive-expression-prime', 'Additive-expression-zegond', 'D', 'Addop',
+                     'Term', 'Term-prime', 'Term-zegond', 'G', 'Factor', 'Var-call-prime', 'Var-prime',
+                     'Factor-prime', 'Factor-zegond', 'Args', 'Arg-list', 'Arg-list-prime']
 
     scany = None
+    next_token = None
+    next_token_symbol = None
 
     def __init__(self):
         self.scany = None
@@ -207,10 +221,37 @@ class Parser:
     def set_scanner(self, scanner_instance):
         self.scany = scanner_instance
 
-    def run(self):
-        stack = ['Program']
-        while True:
-            next_token = self.scany.get_next_token()
+    def get_next_token(self):
+        next_token = self.scany.get_next_token()
+        # TODO: set the variable next_token_symbol for usage in parsing
+        # For example (SYMBOL, [) goes to [
+        # Or (NUM, 242) goes to NUM
 
-            if next_token == '(KEYWORD, $)':
+    def parsie(self, non_term: str):
+        pass
+
+    def run(self):
+        non_term = 'Program'
+        self.get_next_token()
+        predict_set = self.PREDICTS[non_term]
+        i = 0
+        for i in range(len(predict_set)):
+            if next_token in predict_set[i]:
                 break
+        else:
+            # TODO: Error
+            pass
+        production_set = self.PRODUCTIONS[non_term][i]
+        root_node = anytree.Node(non_term)
+        for term in production_set:
+            if term in self.NON_TERMINALS:
+                child_node = self.parsie(term)
+                child_node.parent = root_node
+            elif term == 'EPSILON':
+                pass
+            else:
+                pass
+                # TODO: Add the terminal to the tree
+
+    # if next_token == '(KEYWORD, $)':
+    #     break
