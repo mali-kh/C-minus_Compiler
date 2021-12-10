@@ -48,3 +48,16 @@ class SymbolWriter(Writer):
     def write_symbols(self, symbol_list):
         for index in range(len(symbol_list)):
             self.file.write(str(index + 1) + '.\t' + symbol_list[index] + '\n')
+
+class SyntaxErrorWriter(Writer):
+    def __init__(self, file_name):
+        super().__init__('syntax_errors.txt')
+
+    def write_syntax_error(self, lineno, error_string):
+        if self.lineno != lineno:
+            if self.lineno != 0:
+                self.file.write('\n')
+            self.lineno = lineno
+            self.file.write(str(self.lineno) + '.\t')
+        self.error_exists = True
+        self.file.write(error_string + ' ')
