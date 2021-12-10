@@ -212,5 +212,5 @@ class Parser:
         while True:
             next_token = self.scany.get_next_token()
 
-            if next_token is '(KEYWORD, $)':
+            if next_token == '(KEYWORD, $)':
                 break
