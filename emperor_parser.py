@@ -245,7 +245,7 @@ class Parser:
             else:
                 if self.next_token_symbol in self.FOLLOWS[non_term]:
                     # TODO: Print Error 2 (missing)
-                    self.syntax_error_writer.write_syntax_error(self.scany.get_lineno(), "missing first " + non_term)
+                    self.syntax_error_writer.write_syntax_error(self.scany.get_lineno(), "missing " + non_term)
                     return None
                 else:
                     # TODO: Print Error 1 (illegal)
