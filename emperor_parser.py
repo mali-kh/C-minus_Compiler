@@ -225,9 +225,9 @@ class Parser:
         self.next_token = self.scany.get_next_token()
         typie = self.next_token.split(' ')[0][1:-1]
         if typie == 'SYMBOL' or typie == 'KEYWORD':
-            next_token_symbol = self.next_token.split(' ')[1][0:-1]
+            self.next_token_symbol = self.next_token.split(' ')[1][0:-1]
         else:
-            next_token_symbol = typie
+            self.next_token_symbol = typie
 
     def parsie(self, non_term: str):
         predict_set = self.PREDICTS[non_term]
