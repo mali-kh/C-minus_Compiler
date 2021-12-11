@@ -7,7 +7,7 @@ token_writer = fw.TokenWriter()
 scanner = scanner.Scanner()
 parser = emperor_parser.Parser()
 # PAY ATTENTION TO THIS!!!
-do_scanner_only = True
+do_scanner_only = False
 
 if do_scanner_only:
     while True:

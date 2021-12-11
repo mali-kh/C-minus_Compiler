@@ -230,11 +230,6 @@ class Parser:
             next_token_symbol = typie
 
     def parsie(self, non_term: str):
-        pass
-
-    def run(self):
-        non_term = 'Program'
-        self.get_next_token()
         predict_set = self.PREDICTS[non_term]
         i = 0
         for i in range(len(predict_set)):
@@ -256,9 +251,18 @@ class Parser:
                 if term == self.next_token_symbol:
                     child_node = anytree.Node(self.next_token)
                     child_node.parent = root_node
+                    self.get_next_token()
                 else:
                     pass
                     # TODO: Do some error or something idk
+        return root_node
+
+    def run(self):
+        non_term = 'Program'
+        self.get_next_token()
+        parsed_code = self.parsie(non_term)
+        for pre, fill, node in anytree.RenderTree(parsed_code):
+            print("%s%s" % (pre, node.name))
 
     # if next_token == '(KEYWORD, $)':
     #     break
