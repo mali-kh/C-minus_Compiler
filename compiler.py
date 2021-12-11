@@ -1,3 +1,6 @@
+# Seyyed Mohammad Sadegh Tabaian - 98105868
+# Mohammad Ali Khodabandelou - 98101482
+
 import FileManager.file_writer as fw
 import emperor_parser
 import scanner
