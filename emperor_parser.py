@@ -222,18 +222,19 @@ class Parser:
         self.scany = scanner_instance
 
     def get_next_token(self):
-        self.next_token = self.scany.get_next_token()
-        typie = self.next_token.split(' ')[0][1:-1]
-        if typie == 'SYMBOL' or typie == 'KEYWORD':
-            self.next_token_symbol = self.next_token.split(' ')[1][0:-1]
-        else:
-            self.next_token_symbol = typie
+        if self.next_token_symbol != '$':
+            self.next_token = self.scany.get_next_token()
+            typie = self.next_token.split(' ')[0][1:-1]
+            if typie == 'SYMBOL' or typie == 'KEYWORD':
+                self.next_token_symbol = self.next_token.split(' ')[1][0:-1]
+            else:
+                self.next_token_symbol = typie
 
     def parsie(self, non_term: str):
         predict_set = self.PREDICTS[non_term]
         i = 0
         for i in range(len(predict_set)):
-            if self.next_token in predict_set[i]:
+            if self.next_token_symbol in predict_set[i]:
                 break
         else:
             # TODO: Error
