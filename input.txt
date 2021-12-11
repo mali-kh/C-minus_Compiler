@@ -1,7 +1,15 @@
-/* sample 1 */
-
-void main(void){
-	int a;
-	int b;
-	a = b + 1;
+/* sample 8*/
+int fact ( int n )
+{
+    int f;
+    if ( n = 1 )f = *1;
+    else 
+        f = n * * factorial ( n - 1 );
+    endif
+    return f;
 }
+void main ( void )
+{
+     output ( factorial (3) );
+}
+

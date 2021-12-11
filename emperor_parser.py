@@ -231,19 +231,32 @@ class Parser:
 
     def parsie(self, non_term: str):
         predict_set = self.PREDICTS[non_term]
-        i = 0
-        for i in range(len(predict_set)):
-            if self.next_token_symbol in predict_set[i]:
-                break
-        else:
-            # TODO: Error
-            pass
+
+        continue_searching = True
+        while continue_searching:
+            i = 0
+            continue_searching = False
+            for i in range(len(predict_set)):
+                if self.next_token_symbol in predict_set[i]:
+                    break
+            else:
+                if self.next_token_symbol in self.FOLLOWS[non_term]:
+                    # TODO: Print Error 2 (missing)
+                    return None
+                else:
+                    # TODO: Print Error 1 (illegal)
+                    if self.next_token_symbol == '$':
+                        return None
+                    self.get_next_token()
+                    continue_searching = True
+
         production_set = self.PRODUCTIONS[non_term][i]
         root_node = anytree.Node(non_term)
         for term in production_set:
             if term in self.NON_TERMINALS:
                 child_node = self.parsie(term)
-                child_node.parent = root_node
+                if child_node is not None:
+                    child_node.parent = root_node
             elif term == 'EPSILON':
                 child_node = anytree.Node('epsilon')
                 child_node.parent = root_node
@@ -257,8 +270,8 @@ class Parser:
                         child_node = anytree.Node('$')
                         child_node.parent = root_node
                 else:
+                    # TODO: Print some error or something idk
                     pass
-                    # TODO: Do some error or something idk
         return root_node
 
     def run(self):
