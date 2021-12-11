@@ -222,13 +222,12 @@ class Parser:
         self.scany = scanner_instance
 
     def get_next_token(self):
-        if self.next_token_symbol != '$':
-            self.next_token = self.scany.get_next_token()
-            typie = self.next_token.split(' ')[0][1:-1]
-            if typie == 'SYMBOL' or typie == 'KEYWORD':
-                self.next_token_symbol = self.next_token.split(' ')[1][0:-1]
-            else:
-                self.next_token_symbol = typie
+        self.next_token = self.scany.get_next_token()
+        typie = self.next_token.split(' ')[0][1:-1]
+        if typie == 'SYMBOL' or typie == 'KEYWORD':
+            self.next_token_symbol = self.next_token.split(' ')[1][0:-1]
+        else:
+            self.next_token_symbol = typie
 
     def parsie(self, non_term: str):
         predict_set = self.PREDICTS[non_term]
@@ -250,9 +249,13 @@ class Parser:
                 child_node.parent = root_node
             else:
                 if term == self.next_token_symbol:
-                    child_node = anytree.Node(self.next_token)
-                    child_node.parent = root_node
-                    self.get_next_token()
+                    if self.next_token_symbol != '$':
+                        child_node = anytree.Node(self.next_token)
+                        child_node.parent = root_node
+                        self.get_next_token()
+                    else:
+                        child_node = anytree.Node('$')
+                        child_node.parent = root_node
                 else:
                     pass
                     # TODO: Do some error or something idk
