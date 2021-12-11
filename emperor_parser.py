@@ -218,6 +218,7 @@ class Parser:
 
     def __init__(self):
         self.syntax_error_writer = fw.SyntaxErrorWriter()
+        self.parse_tree_writer = fw.ParseTreeWriter()
         self.scany = None
 
     def set_scanner(self, scanner_instance):
@@ -289,8 +290,11 @@ class Parser:
         self.get_next_token()
         self.reached_EOF = False
         parsed_code = self.parsie(non_term)
-        for pre, fill, node in anytree.RenderTree(parsed_code):
-            print("%s%s" % (pre, node.name))
+        # for pre, fill, node in anytree.RenderTree(parsed_code):
+        #     print("%s%s" % (pre, node.name))
+        self.parse_tree_writer.write_parse_tree(parsed_code)
+        self.syntax_error_writer.close()
+        self.parse_tree_writer.close()
 
     # if next_token == '(KEYWORD, $)':
     #     break

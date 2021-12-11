@@ -1,6 +1,9 @@
+import anytree
+
+
 class Writer:
     def __init__(self, file_name):
-        self.file = open(file_name, 'w')
+        self.file = open(file_name, 'w', encoding="utf-8")
 
     def close(self):
         self.file.close()
@@ -49,9 +52,28 @@ class SymbolWriter(Writer):
         for index in range(len(symbol_list)):
             self.file.write(str(index + 1) + '.\t' + symbol_list[index] + '\n')
 
+
 class SyntaxErrorWriter(Writer):
     def __init__(self):
         super().__init__('syntax_errors.txt')
+        self.error_exists = False
 
     def write_syntax_error(self, lineno, error_string):
+        self.error_exists = True
         self.file.write('#' + str(lineno) + ' : syntax error, ' + error_string + '\n')
+
+    def close(self):
+        if not self.error_exists:
+            self.file.write('There is no lexical error.')
+        super().close()
+
+
+class ParseTreeWriter(Writer):
+    def __init__(self):
+        super().__init__('parse_tree.txt')
+
+    def write_parse_tree(self, parse_tree):
+        stringy = ''
+        for pre, fill, node in anytree.RenderTree(parse_tree):
+            stringy += (str("%s%s" % (pre, node.name)) + '\n')
+        self.file.write(stringy)
