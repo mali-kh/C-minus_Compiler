@@ -214,9 +214,10 @@ class Parser:
     scany = None
     next_token = None
     next_token_symbol = None
+    reached_EOF = False
 
     def __init__(self):
-        self.syntax_error_writer = fw.SyntaxErrorWriter
+        self.syntax_error_writer = fw.SyntaxErrorWriter()
         self.scany = None
 
     def set_scanner(self, scanner_instance):
@@ -244,13 +245,15 @@ class Parser:
             else:
                 if self.next_token_symbol in self.FOLLOWS[non_term]:
                     # TODO: Print Error 2 (missing)
-                    self.syntax_error_writer.write_syntax_error(self.scany.get_lineno(), "missing " + non_term)
+                    self.syntax_error_writer.write_syntax_error(self.scany.get_lineno(), "missing first " + non_term)
                     return None
                 else:
                     # TODO: Print Error 1 (illegal)
-                    self.syntax_error_writer.write_syntax_error(self.scany.get_lineno(), "illegal " + self.next_token_symbol)
                     if self.next_token_symbol == '$':
+                        self.syntax_error_writer.write_syntax_error(self.scany.get_lineno(), "Unexpected EOF")
+                        self.reached_EOF = True
                         return None
+                    self.syntax_error_writer.write_syntax_error(self.scany.get_lineno(), "illegal " + self.next_token_symbol)
                     self.get_next_token()
                     continue_searching = True
 
@@ -261,6 +264,8 @@ class Parser:
                 child_node = self.parsie(term)
                 if child_node is not None:
                     child_node.parent = root_node
+                if self.reached_EOF:
+                    return root_node
             elif term == 'EPSILON':
                 child_node = anytree.Node('epsilon')
                 child_node.parent = root_node
@@ -275,13 +280,14 @@ class Parser:
                         child_node.parent = root_node
                 else:
                     # TODO: Print some error or something idk
-                    self.syntax_error_writer.write_syntax_error(self.scany.get_lineno(), "missing " + non_term)
+                    self.syntax_error_writer.write_syntax_error(self.scany.get_lineno(), "missing " + term)
                     pass
         return root_node
 
     def run(self):
         non_term = 'Program'
         self.get_next_token()
+        self.reached_EOF = False
         parsed_code = self.parsie(non_term)
         for pre, fill, node in anytree.RenderTree(parsed_code):
             print("%s%s" % (pre, node.name))

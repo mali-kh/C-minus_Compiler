@@ -50,8 +50,8 @@ class SymbolWriter(Writer):
             self.file.write(str(index + 1) + '.\t' + symbol_list[index] + '\n')
 
 class SyntaxErrorWriter(Writer):
-    def __init__(self, file_name):
+    def __init__(self):
         super().__init__('syntax_errors.txt')
 
     def write_syntax_error(self, lineno, error_string):
-        self.file.write('#' + str(lineno) + ' : syntax error, ' + error_string)
+        self.file.write('#' + str(lineno) + ' : syntax error, ' + error_string + '\n')

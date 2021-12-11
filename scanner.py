@@ -380,6 +380,7 @@ class Scanner:
                     self.finished = True
                     self.error_writer.close()
                     self.symbol_writer.close()
+                    self.temporary_lineno = self.lineno
                     return '(KEYWORD, $)'
                 # Check if it's time for final round
                 if len(self.current_char) == 0:
