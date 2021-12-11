@@ -1,6 +1,6 @@
 import scanner
 import anytree
-
+import FileManager.file_writer as fw
 
 class Parser:
     PRODUCTIONS = {'Program': [['Declaration-list', '$']],
@@ -216,6 +216,7 @@ class Parser:
     next_token_symbol = None
 
     def __init__(self):
+        self.syntax_error_writer = fw.SyntaxErrorWriter
         self.scany = None
 
     def set_scanner(self, scanner_instance):
@@ -233,6 +234,7 @@ class Parser:
         predict_set = self.PREDICTS[non_term]
 
         continue_searching = True
+        i = 0
         while continue_searching:
             i = 0
             continue_searching = False
@@ -242,9 +244,11 @@ class Parser:
             else:
                 if self.next_token_symbol in self.FOLLOWS[non_term]:
                     # TODO: Print Error 2 (missing)
+                    self.syntax_error_writer.write_syntax_error(self.scany.get_lineno(), "missing " + non_term)
                     return None
                 else:
                     # TODO: Print Error 1 (illegal)
+                    self.syntax_error_writer.write_syntax_error(self.scany.get_lineno(), "illegal " + self.next_token_symbol)
                     if self.next_token_symbol == '$':
                         return None
                     self.get_next_token()
@@ -271,6 +275,7 @@ class Parser:
                         child_node.parent = root_node
                 else:
                     # TODO: Print some error or something idk
+                    self.syntax_error_writer.write_syntax_error(self.scany.get_lineno(), "missing " + non_term)
                     pass
         return root_node
 

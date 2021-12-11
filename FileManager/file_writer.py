@@ -54,4 +54,4 @@ class SyntaxErrorWriter(Writer):
         super().__init__('syntax_errors.txt')
 
     def write_syntax_error(self, lineno, error_string):
-        self.file.write('#' + str(lineno) + ' : syntax error, ')
+        self.file.write('#' + str(lineno) + ' : syntax error, ' + error_string)
