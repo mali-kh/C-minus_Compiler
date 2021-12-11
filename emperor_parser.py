@@ -222,10 +222,12 @@ class Parser:
         self.scany = scanner_instance
 
     def get_next_token(self):
-        next_token = self.scany.get_next_token()
-        # TODO: set the variable next_token_symbol for usage in parsing
-        # For example (SYMBOL, [) goes to [
-        # Or (NUM, 242) goes to NUM
+        self.next_token = self.scany.get_next_token()
+        typie = self.next_token.split(' ')[0][1:-1]
+        if typie == 'SYMBOL' or typie == 'KEYWORD':
+            next_token_symbol = self.next_token.split(' ')[1][0:-1]
+        else:
+            next_token_symbol = typie
 
     def parsie(self, non_term: str):
         pass
@@ -236,7 +238,7 @@ class Parser:
         predict_set = self.PREDICTS[non_term]
         i = 0
         for i in range(len(predict_set)):
-            if next_token in predict_set[i]:
+            if self.next_token in predict_set[i]:
                 break
         else:
             # TODO: Error
@@ -248,10 +250,15 @@ class Parser:
                 child_node = self.parsie(term)
                 child_node.parent = root_node
             elif term == 'EPSILON':
-                pass
+                child_node = anytree.Node('epsilon')
+                child_node.parent = root_node
             else:
-                pass
-                # TODO: Add the terminal to the tree
+                if term == self.next_token_symbol:
+                    child_node = anytree.Node(self.next_token)
+                    child_node.parent = root_node
+                else:
+                    pass
+                    # TODO: Do some error or something idk
 
     # if next_token == '(KEYWORD, $)':
     #     break
