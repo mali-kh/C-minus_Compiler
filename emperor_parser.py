@@ -1,4 +1,3 @@
-import scanner
 import anytree
 import FileManager.file_writer as fw
 
@@ -246,11 +245,9 @@ class Parser:
                     break
             else:
                 if self.next_token_symbol in self.FOLLOWS[non_term]:
-                    # TODO: Print Error 2 (missing)
                     self.syntax_error_writer.write_syntax_error(self.scany.get_lineno(), "missing " + non_term)
                     return None
                 else:
-                    # TODO: Print Error 1 (illegal)
                     if self.next_token_symbol == '$':
                         self.syntax_error_writer.write_syntax_error(self.scany.get_lineno(), "Unexpected EOF")
                         self.reached_EOF = True
@@ -281,7 +278,6 @@ class Parser:
                         child_node = anytree.Node('$')
                         child_node.parent = root_node
                 else:
-                    # TODO: Print some error or something idk
                     self.syntax_error_writer.write_syntax_error(self.scany.get_lineno(), "missing " + term)
                     pass
         return root_node
@@ -291,11 +287,6 @@ class Parser:
         self.get_next_token()
         self.reached_EOF = False
         parsed_code = self.parsie(non_term)
-        # for pre, fill, node in anytree.RenderTree(parsed_code):
-        #     print("%s%s" % (pre, node.name))
         self.parse_tree_writer.write_parse_tree(parsed_code)
         self.syntax_error_writer.close()
         self.parse_tree_writer.close()
-
-    # if next_token == '(KEYWORD, $)':
-    #     break
