@@ -212,6 +212,7 @@ class Parser:
                      'Factor-prime', 'Factor-zegond', 'Args', 'Arg-list', 'Arg-list-prime']
 
     scany = None
+    codegeny = None
     next_token = None
     next_token_symbol = None
     reached_EOF = False
@@ -220,9 +221,13 @@ class Parser:
         self.syntax_error_writer = fw.SyntaxErrorWriter()
         self.parse_tree_writer = fw.ParseTreeWriter()
         self.scany = None
+        self.codegeny = None
 
     def set_scanner(self, scanner_instance):
         self.scany = scanner_instance
+
+    def set_codegen(self, codegen_instance):
+        self.codegeny = codegen_instance
 
     def get_next_token(self):
         self.next_token = self.scany.get_next_token()
@@ -259,7 +264,9 @@ class Parser:
         production_set = self.PRODUCTIONS[non_term][i]
         root_node = anytree.Node(non_term)
         for term in production_set:
-            if term in self.NON_TERMINALS:
+            if term.startswith('#'):
+                self.codegeny.generate_code(term, self.next_token)
+            elif term in self.NON_TERMINALS:
                 child_node = self.parsie(term)
                 if child_node is not None:
                     child_node.parent = root_node
