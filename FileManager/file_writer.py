@@ -77,3 +77,8 @@ class ParseTreeWriter(Writer):
         for pre, fill, node in anytree.RenderTree(parse_tree):
             stringy += (str("%s%s" % (pre, node.name)) + '\n')
         self.file.write(stringy)
+
+
+class IntermediateCodeWriter:
+    def __init__(self):
+        pass
