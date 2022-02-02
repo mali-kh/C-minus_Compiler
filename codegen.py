@@ -50,8 +50,8 @@ class Codegen:
             self.semantic_stack.append(token)
         elif action_symbol == 'ptype_void':
             self.semantic_stack.append(token)
-        elif action_symbol == 'pnum':
-            self.semantic_stack.append(token)
+        elif action_symbol == 'parr_size':
+            self.semantic_stack.append('#' + token)
         elif action_symbol == 'label':
             self.semantic_stack.append(len(self.program_block))
         elif action_symbol == 'declare_func':
@@ -119,8 +119,8 @@ class Codegen:
             elif self.semantic_stack[-2] == '==':
                 operator = 'EQ'
             new_temp_address = self.get_temp()
-            self.program_block.append(f'({operator}, {self.semantic_stack[-2]}, {self.semantic_stack[-1]}, {new_temp_address})')
-            self.semantic_multi_pop(2)
+            self.program_block.append(f'({operator}, {self.semantic_stack[-3]}, {self.semantic_stack[-1]}, {new_temp_address})')
+            self.semantic_multi_pop(3)
             self.semantic_stack.append(new_temp_address)
         elif action_symbol == 'psmaller_than':
             self.semantic_stack.append(token)
@@ -137,8 +137,17 @@ class Codegen:
             elif self.semantic_stack[-2] == '+':
                 operator = 'ADD'
             new_temp_address = self.get_temp()
-            self.program_block.append(f'({operator}, {self.semantic_stack[-2]}, {self.semantic_stack[-1]}, {new_temp_address})')
+            self.program_block.append(f'({operator}, {self.semantic_stack[-3]}, {self.semantic_stack[-1]}, {new_temp_address})')
+            self.semantic_multi_pop(3)
+            self.semantic_stack.append(new_temp_address)
+        elif action_symbol == 'calculate_multiplication':
+            new_temp_address = self.get_temp()
+            self.program_block.append(f'(MULT, {self.semantic_stack[-2]}, {self.semantic_stack[-1]}, {new_temp_address})')
             self.semantic_multi_pop(2)
             self.semantic_stack.append(new_temp_address)
+        elif action_symbol == 'pnum':
+            self.semantic_stack.append('#' + token)
+        elif action_symbol == 'function_call':
+            pass
 
 
