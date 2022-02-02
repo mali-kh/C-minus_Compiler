@@ -23,6 +23,8 @@ class Codegen:
         self.scope_stack = []
         self.break_back_patch_list = []
 
+        self.program_block.append('')  # Jump to main
+
     def get_temp(self):
         address = self.next_empty_temp_address
         self.next_empty_temp_address += 4
@@ -57,6 +59,8 @@ class Codegen:
         elif action_symbol == 'declare_func':
             entry = SymbolTableEntry(self.semantic_stack[-2], 'func', self.semantic_stack[-1], 0, self.semantic_stack[-3], len(self.scope_stack))
             self.masmal_symbol_table.append(entry)
+            if self.semantic_stack[-2] == 'main':
+                self.program_block[0] = f'(JP, {len(self.program_block)}, , )'
             self.semantic_multi_pop(3)
         elif action_symbol == 'declare_var':
             address = self.get_var(1)
@@ -148,6 +152,9 @@ class Codegen:
         elif action_symbol == 'pnum':
             self.semantic_stack.append('#' + token)
         elif action_symbol == 'function_call':
-            pass
+            new_temp_address = 0
+            # Create jump for calling # TODO dodododododododododododododododododododododododododododododo
+            self.semantic_multi_pop(2)
+            self.semantic_stack.append(new_temp_address)
 
 
