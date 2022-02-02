@@ -32,7 +32,13 @@ class Codegen:
         return address
 
     def find_addr(self, lexeme):
-        pass
+        for symbol in reversed(self.masmal_symbol_table):
+            if symbol.lexeme == lexeme:
+                return symbol.address
+
+    def semantic_multi_pop(self, pop_count):
+        for i in range(pop_count):
+            self.semantic_stack.pop()
 
     def generate_code(self, action_symbol, token):
         action_symbol = action_symbol[1:]
@@ -46,16 +52,22 @@ class Codegen:
             self.semantic_stack.append(len(self.program_block))
         elif action_symbol == 'declare_func':
             entry = SymbolTableEntry(self.semantic_stack[-2], 'func', self.semantic_stack[-1], 0, self.semantic_stack[-3], len(self.scope_stack))
+            self.masmal_symbol_table.append(entry)
+            self.semantic_multi_pop(3)
         elif action_symbol == 'declare_var':
             address = self.get_var(1)
             entry = SymbolTableEntry(self.semantic_stack[-1], 'var', address, 0, self.semantic_stack[-2], len(self.scope_stack))
+            self.masmal_symbol_table.append(entry)
+            self.semantic_multi_pop(2)
         elif action_symbol == 'declare_array':
             address = self.get_var(self.semantic_stack[-1])
             entry = SymbolTableEntry(self.semantic_stack[-2], 'array', address, self.semantic_stack[-1], self.semantic_stack[-3], len(self.scope_stack))
+            self.masmal_symbol_table.append(entry)
+            self.semantic_multi_pop(3)
         elif action_symbol == 'declare_pointer':
             pass
         elif action_symbol == 'increase_scope':
-            pass
+            self.scope_stack.append(len(self.masmal_symbol_table))
         elif action_symbol == 'decrease_scope':
-            pass
+            self.masmal_symbol_table = self.masmal_symbol_table[:self.scope_stack.pop()]
 
