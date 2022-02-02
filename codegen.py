@@ -44,7 +44,9 @@ class Codegen:
         action_symbol = action_symbol[1:]
         if action_symbol == 'pid':
             self.semantic_stack.append(token)
-        elif action_symbol == 'ptype':
+        elif action_symbol == 'ptype_int':
+            self.semantic_stack.append(token)
+        elif action_symbol == 'ptype_void':
             self.semantic_stack.append(token)
         elif action_symbol == 'pnum':
             self.semantic_stack.append(token)
@@ -65,9 +67,15 @@ class Codegen:
             self.masmal_symbol_table.append(entry)
             self.semantic_multi_pop(3)
         elif action_symbol == 'declare_pointer':
-            pass
+            address = self.get_var(1)
+            entry = SymbolTableEntry(self.semantic_stack[-1], 'pointer', address, 0, self.semantic_stack[-2], len(self.scope_stack))
+            self.masmal_symbol_table.append(entry)
+            self.semantic_multi_pop(2)
         elif action_symbol == 'increase_scope':
             self.scope_stack.append(len(self.masmal_symbol_table))
         elif action_symbol == 'decrease_scope':
             self.masmal_symbol_table = self.masmal_symbol_table[:self.scope_stack.pop()]
+        elif action_symbol == 'pop':
+            self.semantic_multi_pop(1)
+
 
