@@ -126,5 +126,19 @@ class Codegen:
             self.semantic_stack.append(token)
         elif action_symbol == 'pequals':
             self.semantic_stack.append(token)
+        elif action_symbol == 'pplus':
+            self.semantic_stack.append(token)
+        elif action_symbol == 'pminus':
+            self.semantic_stack.append(token)
+        elif action_symbol == 'calculate_addition':
+            operator = ''
+            if self.semantic_stack[-2] == '-':
+                operator = 'SUB'
+            elif self.semantic_stack[-2] == '+':
+                operator = 'ADD'
+            new_temp_address = self.get_temp()
+            self.program_block.append(f'({operator}, {self.semantic_stack[-2]}, {self.semantic_stack[-1]}, {new_temp_address})')
+            self.semantic_multi_pop(2)
+            self.semantic_stack.append(new_temp_address)
 
 
