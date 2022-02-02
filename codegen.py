@@ -105,3 +105,26 @@ class Codegen:
             self.program_block.append(f'(ASSIGN, {self.semantic_stack[-1]}, {address}, )')
             self.semantic_multi_pop(1)
             self.semantic_stack.append(address)
+        elif action_symbol == 'assign':
+            self.program_block.append(f'(ASSIGN, {self.semantic_stack[-1]}, {self.semantic_stack[-2]}, )')
+            self.semantic_multi_pop(1)  # We pop only one and leave the other one for later use
+        elif action_symbol == 'get_array_element':
+            new_address = self.find_addr(self.semantic_stack[-2]) + self.semantic_stack[-1] * 4
+            self.semantic_multi_pop(2)
+            self.semantic_stack.append(new_address)
+        elif action_symbol == 'calculate_relation':
+            operator = ''
+            if self.semantic_stack[-2] == '<':
+                operator = 'LT'
+            elif self.semantic_stack[-2] == '==':
+                operator = 'EQ'
+            new_temp_address = self.get_temp()
+            self.program_block.append(f'({operator}, {self.semantic_stack[-2]}, {self.semantic_stack[-1]}, {new_temp_address})')
+            self.semantic_multi_pop(2)
+            self.semantic_stack.append(new_temp_address)
+        elif action_symbol == 'psmaller_than':
+            self.semantic_stack.append(token)
+        elif action_symbol == 'pequals':
+            self.semantic_stack.append(token)
+
+
