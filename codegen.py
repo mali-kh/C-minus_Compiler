@@ -17,9 +17,11 @@ class Codegen:
         self.semantic_stack = []
         self.masmal_symbol_table = []
         self.program_block = []
-        self.next_empty_temp_address = 1000
+        self.next_empty_temp_address = 1500
+        self.call_stack_head = 1000
         self.next_empty_var_address = 500
         self.scope_stack = []
+        self.break_back_patch_list = []
 
     def get_temp(self):
         address = self.next_empty_temp_address
@@ -78,7 +80,8 @@ class Codegen:
         elif action_symbol == 'pop':
             self.semantic_multi_pop(1)
         elif action_symbol == 'break_jump':
-            pass
+            self.break_back_patch_list.append(len(self.program_block))
+            self.program_block.append([])
         elif action_symbol == 'save':
             self.semantic_stack.append(len(self.program_block))
             self.program_block.append([])
@@ -87,5 +90,11 @@ class Codegen:
             self.semantic_multi_pop(2)
         elif action_symbol == 'jp':
             self.program_block[self.semantic_stack[-1]] = f'(JP, {len(self.program_block)}, , )'
+            self.semantic_multi_pop(1)
+        elif action_symbol == 'until':
+            self.program_block.append(f'(JPF, {self.semantic_stack[-1]}, {self.semantic_stack[-2]}, )')
             self.semantic_multi_pop(2)
+            for break_back_patch in self.break_back_patch_list:
+                self.program_block[break_back_patch] = f'(JP, {len(self.program_block)}, , )'
+
 
