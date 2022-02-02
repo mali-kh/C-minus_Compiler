@@ -77,5 +77,15 @@ class Codegen:
             self.masmal_symbol_table = self.masmal_symbol_table[:self.scope_stack.pop()]
         elif action_symbol == 'pop':
             self.semantic_multi_pop(1)
-
+        elif action_symbol == 'break_jump':
+            pass
+        elif action_symbol == 'save':
+            self.semantic_stack.append(len(self.program_block))
+            self.program_block.append([])
+        elif action_symbol == 'jpf':
+            self.program_block[self.semantic_stack[-1]] = f'(JPF, {self.semantic_stack[-2]}, {len(self.program_block)}, )'
+            self.semantic_multi_pop(2)
+        elif action_symbol == 'jp':
+            self.program_block[self.semantic_stack[-1]] = f'(JP, {len(self.program_block)}, , )'
+            self.semantic_multi_pop(2)
 
