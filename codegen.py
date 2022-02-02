@@ -96,5 +96,12 @@ class Codegen:
             self.semantic_multi_pop(2)
             for break_back_patch in self.break_back_patch_list:
                 self.program_block[break_back_patch] = f'(JP, {len(self.program_block)}, , )'
-
-
+        elif action_symbol == 'return_empty':
+            address = self.get_temp()
+            self.program_block.append(f'(ASSIGN, 0, {address}, )')  # Is this needed?
+            self.semantic_stack.append(address)
+        elif action_symbol == 'return_from_stack':
+            address = self.get_temp()
+            self.program_block.append(f'(ASSIGN, {self.semantic_stack[-1]}, {address}, )')
+            self.semantic_multi_pop(1)
+            self.semantic_stack.append(address)
