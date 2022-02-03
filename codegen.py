@@ -179,7 +179,11 @@ class Codegen:
         elif action_symbol == 'pnum':
             self.semantic_stack.append('#' + token)
         elif action_symbol == 'function_call':
-
+            for symbol in reversed(self.masmal_symbol_table):
+                if symbol.pvf == 'func':
+                    break
+                self.program_block.append(f'(ASSIGN, {symbol.address}, {self.call_stack_head}, )')
+                self.program_block.append(f'(ADD, #4, {self.call_stack_head}, {self.call_stack_head})')
             new_temp_address = 0
             # Create jump for calling # TODO dodododododododododododododododododododododododododododododo
             self.semantic_multi_pop(2)
