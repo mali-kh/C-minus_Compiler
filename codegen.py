@@ -213,12 +213,12 @@ class Codegen:
                 self.program_block.append(f'(ASSIGN, {symbol.address}, @{self.CALL_STACK_HEAD}, )')
                 self.program_block.append(f'(ADD, #4, {self.CALL_STACK_HEAD}, {self.CALL_STACK_HEAD})')
                 self.compile_time_address_call_stack.append(symbol.address)
-                self.compile_time_address_call_stack_counter[-1] +=1
+                self.compile_time_address_call_stack_counter[-1] += 1
                 if symbol.pvf == 'array':
                     for i in range(1, symbol.size):
                         self.program_block.append(f'(ASSIGN, {symbol.address + 4 * i}, @{self.CALL_STACK_HEAD}, )')
                         self.program_block.append(f'(ADD, #4, {self.CALL_STACK_HEAD}, {self.CALL_STACK_HEAD})')
-                        self.compile_time_address_call_stack.append(symbol.address)
+                        self.compile_time_address_call_stack.append(symbol.address + 4 * i)
                         self.compile_time_address_call_stack_counter[-1] += 1
             for symbol in reversed(self.temp_symbol_table):
                 if symbol.scope < len(self.scope_stack):
@@ -227,14 +227,29 @@ class Codegen:
                 self.program_block.append(f'(ADD, #4, {self.CALL_STACK_HEAD}, {self.CALL_STACK_HEAD})')
                 self.compile_time_address_call_stack.append(symbol.address)
                 self.compile_time_address_call_stack_counter[-1] += 1
-            self.program_block.append(f'(ASSIGN, {len(self.program_block)+2}, @{self.CALL_STACK_HEAD}, )')
+            # Put Arguments
+            for paramie in reversed(self.ready_function_param_list):
+                self.program_block.append(f'(ASSIGN, {self.semantic_stack.pop()}, {paramie.address}, )')
+            self.semantic_stack.pop()  # Accidentally didn't use the function name so I'll just pop it and never think about it again
+            # Jump to function body
+            self.program_block.append(f'(ASSIGN, {len(self.program_block)+3}, @{self.CALL_STACK_HEAD}, )')
             self.program_block.append(f'(ADD, #4, {self.CALL_STACK_HEAD}, {self.CALL_STACK_HEAD})')
             self.program_block.append(f'(JP, {self.ready_function_address}, , )')
+            for i in range(self.compile_time_address_call_stack_counter[-1]):
+                address = self.compile_time_address_call_stack.pop()
+                self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
+                self.program_block.append(f'(ASSIGN, {self.CALL_STACK_HEAD}, {address}, )')
 
 
 
 
+
+
+            self.compile_time_address_call_stack_counter.pop()
             # Create jump for calling # TODO dodododododododododododododododododododododododododododododo
+
+
+
         elif action_symbol == 'get_function_ready':
             for symbol in self.masmal_symbol_table:
                 if symbol.pvf == 'func' and symbol.lexeme == self.semantic_stack[-1]:
