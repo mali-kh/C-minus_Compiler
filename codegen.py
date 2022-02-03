@@ -11,6 +11,19 @@ class SymbolTableEntry:
         self.scope = scope
 
 
+class Param:
+    def __init__(self, typie, address, pvf):
+        self.address = address
+        self.pvf = pvf
+        self.typie = typie
+
+
+class SymbolTableFunction(SymbolTableEntry):
+    def __init__(self, lexeme, pvf, address, size, typie, scope):
+        super().__init__(lexeme, pvf, address, size, typie, scope)
+        self.param_list = []
+
+
 class Codegen:
     def __init__(self):
         self.code_writer = fw.IntermediateCodeWriter()
@@ -22,6 +35,7 @@ class Codegen:
         self.next_empty_var_address = 500
         self.scope_stack = []
         self.break_back_patch_list = []
+        self.ready_function_param_list = []
 
         self.program_block.append('')  # Jump to main
 
@@ -57,7 +71,7 @@ class Codegen:
         elif action_symbol == 'label':
             self.semantic_stack.append(len(self.program_block))
         elif action_symbol == 'declare_func':
-            entry = SymbolTableEntry(self.semantic_stack[-2], 'func', self.semantic_stack[-1], 0, self.semantic_stack[-3], len(self.scope_stack))
+            entry = SymbolTableFunction(self.semantic_stack[-2], 'func', self.semantic_stack[-1], 0, self.semantic_stack[-3], len(self.scope_stack))
             self.masmal_symbol_table.append(entry)
             if self.semantic_stack[-2] == 'main':
                 self.program_block[0] = f'(JP, {len(self.program_block)}, , )'
@@ -72,9 +86,22 @@ class Codegen:
             entry = SymbolTableEntry(self.semantic_stack[-2], 'array', address, self.semantic_stack[-1], self.semantic_stack[-3], len(self.scope_stack))
             self.masmal_symbol_table.append(entry)
             self.semantic_multi_pop(3)
-        elif action_symbol == 'declare_pointer':
+        elif action_symbol == 'declare_var_param':
+            address = self.get_var(1)
+            entry = SymbolTableEntry(self.semantic_stack[-1], 'var', address, 0, self.semantic_stack[-2], len(self.scope_stack))
+            for symbol in reversed(self.masmal_symbol_table):
+                if symbol.pvf == 'func':
+                    symbol.param_list.append(Param(self.semantic_stack[-2], address, 'var'))
+                    break
+            self.masmal_symbol_table.append(entry)
+            self.semantic_multi_pop(2)
+        elif action_symbol == 'declare_pointer_param':
             address = self.get_var(1)
             entry = SymbolTableEntry(self.semantic_stack[-1], 'pointer', address, 0, self.semantic_stack[-2], len(self.scope_stack))
+            for symbol in reversed(self.masmal_symbol_table):
+                if symbol.typie == 'func':
+                    symbol.param_list.append(Param(self.semantic_stack[-2], address, 'pointer'))
+                    break
             self.masmal_symbol_table.append(entry)
             self.semantic_multi_pop(2)
         elif action_symbol == 'increase_scope':
@@ -152,9 +179,13 @@ class Codegen:
         elif action_symbol == 'pnum':
             self.semantic_stack.append('#' + token)
         elif action_symbol == 'function_call':
+
             new_temp_address = 0
             # Create jump for calling # TODO dodododododododododododododododododododododododododododododo
             self.semantic_multi_pop(2)
             self.semantic_stack.append(new_temp_address)
-
+        elif action_symbol == 'get_function_ready':
+            for symbol in self.masmal_symbol_table:
+                if symbol.pvf == 'func' and symbol.lexeme == self.semantic_stack[-1]:
+                    self.ready_function_param_list = symbol.param_list
 
