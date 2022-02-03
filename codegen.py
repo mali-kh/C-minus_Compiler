@@ -36,15 +36,18 @@ class Codegen:
         self.semantic_stack = []
         self.masmal_symbol_table = []
         self.program_block = []
-        self.next_empty_temp_address = 1500
-        self.call_stack_head = 1000
+        self.next_empty_temp_address = 2000
+        self.CALL_STACK_HEAD = 1000  # This is a pointer to call stack head
         self.next_empty_var_address = 500
-        self.RETURN_VALUE_ADDRESS = 2000
+        self.RETURN_VALUE_ADDRESS = 2500
         self.scope_stack = []
         self.break_back_patch_list = []
         self.ready_function_param_list = []
         self.temp_symbol_table = []
+        self.compile_time_address_call_stack = []
+        self.compile_time_address_call_stack_counter = []
 
+        self.program_block.append(f'(ASSIGN, 1004, {self.CALL_STACK_HEAD}, )')
         self.program_block.append('')  # Jump to main
 
     def get_temp(self):
@@ -122,10 +125,10 @@ class Codegen:
             self.semantic_multi_pop(1)
         elif action_symbol == 'break_jump':
             self.break_back_patch_list.append(len(self.program_block))
-            self.program_block.append([])
+            self.program_block.append('')
         elif action_symbol == 'save':
             self.semantic_stack.append(len(self.program_block))
-            self.program_block.append([])
+            self.program_block.append('')
         elif action_symbol == 'jpf':
             self.program_block[self.semantic_stack[-1]] = f'(JPF, {self.semantic_stack[-2]}, {len(self.program_block)}, )'
             self.semantic_multi_pop(2)
@@ -139,10 +142,19 @@ class Codegen:
                 self.program_block[break_back_patch] = f'(JP, {len(self.program_block)}, , )'
         elif action_symbol == 'return_empty':
             self.program_block.append(f'(ASSIGN, 0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
+            self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
+            self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
             self.semantic_stack.append(self.RETURN_VALUE_ADDRESS)
         elif action_symbol == 'return_from_stack':
             self.program_block.append(f'(ASSIGN, {self.semantic_stack[-1]}, {self.RETURN_VALUE_ADDRESS}, )')
+            self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
+            self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
             self.semantic_multi_pop(1)
+            self.semantic_stack.append(self.RETURN_VALUE_ADDRESS)
+        elif action_symbol == 'implicit_return':
+            self.program_block.append(f'(ASSIGN, 0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
+            self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
+            self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
             self.semantic_stack.append(self.RETURN_VALUE_ADDRESS)
         elif action_symbol == 'assign':
             self.program_block.append(f'(ASSIGN, {self.semantic_stack[-1]}, {self.semantic_stack[-2]}, )')
@@ -193,17 +205,33 @@ class Codegen:
         elif action_symbol == 'pnum':
             self.semantic_stack.append('#' + token)
         elif action_symbol == 'function_call':
+            self.compile_time_address_call_stack_counter.append(0)
             for symbol in reversed(self.masmal_symbol_table):
                 if symbol.scope < len(self.scope_stack):
                     break
-                self.program_block.append(f'(ASSIGN, {symbol.address}, {self.call_stack_head}, )')
-                self.program_block.append(f'(ADD, #4, {self.call_stack_head}, {self.call_stack_head})')
-
+                self.program_block.append(f'(ASSIGN, {symbol.address}, @{self.CALL_STACK_HEAD}, )')
+                self.program_block.append(f'(ADD, #4, {self.CALL_STACK_HEAD}, {self.CALL_STACK_HEAD})')
+                self.compile_time_address_call_stack.append(symbol.address)
+                self.compile_time_address_call_stack_counter[-1] +=1
+                if symbol.pvf == 'array':
+                    for i in range(1, symbol.size):
+                        self.program_block.append(f'(ASSIGN, {symbol.address + 4 * i}, @{self.CALL_STACK_HEAD}, )')
+                        self.program_block.append(f'(ADD, #4, {self.CALL_STACK_HEAD}, {self.CALL_STACK_HEAD})')
+                        self.compile_time_address_call_stack.append(symbol.address)
+                        self.compile_time_address_call_stack_counter[-1] += 1
             for symbol in reversed(self.temp_symbol_table):
                 if symbol.scope < len(self.scope_stack):
                     break
-                self.program_block.append(f'(ASSIGN, {symbol.address}, {self.call_stack_head}, )')
-                self.program_block.append(f'(ADD, #4, {self.call_stack_head}, {self.call_stack_head})')
+                self.program_block.append(f'(ASSIGN, {symbol.address}, @{self.CALL_STACK_HEAD}, )')
+                self.program_block.append(f'(ADD, #4, {self.CALL_STACK_HEAD}, {self.CALL_STACK_HEAD})')
+                self.compile_time_address_call_stack.append(symbol.address)
+                self.compile_time_address_call_stack_counter[-1] += 1
+            self.program_block.append(f'(ASSIGN, {len(self.program_block)+2}, @{self.CALL_STACK_HEAD}, )')
+            self.program_block.append(f'(ADD, #4, {self.CALL_STACK_HEAD}, {self.CALL_STACK_HEAD})')
+
+
+
+
             new_temp_address = 0
             # Create jump for calling # TODO dodododododododododododododododododododododododododododododo
             self.semantic_multi_pop(2)

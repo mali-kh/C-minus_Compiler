@@ -8,7 +8,7 @@ class Parser:
                    'Declaration-initial': [['Type-specifier', '#declare_pid', 'ID']],
                    'Declaration-prime': [['#label', '#declare_func', '#increase_scope', 'Fun-declaration-prime', '#decrease_scope'], ['Var-declaration-prime']],
                    'Var-declaration-prime': [[';', '#declare_var'], ['[', '#parr_size', 'NUM', ']', ';', '#declare_array']],
-                   'Fun-declaration-prime': [['(', 'Params', ')', 'Compound-stmt']],
+                   'Fun-declaration-prime': [['(', 'Params', ')', 'Compound-stmt', '#implicit_return']],
                    'Type-specifier': [['#ptype_int', 'int'], ['#ptype_void', 'void']],
                    'Params': [['#ptype_int', 'int', '#declare_pid', 'ID', 'Param-prime', 'Param-list'], ['void']],
                    'Param-list': [[',', 'Param', 'Param-list'], ['EPSILON']],
