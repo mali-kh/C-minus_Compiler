@@ -216,6 +216,9 @@ class Parser:
     next_token_symbol = None
     reached_EOF = False
 
+    if 1 == 1:
+        print("sag")
+
     def __init__(self):
         self.syntax_error_writer = fw.SyntaxErrorWriter()
         self.parse_tree_writer = fw.ParseTreeWriter()
@@ -264,7 +267,8 @@ class Parser:
         root_node = anytree.Node(non_term)
         for term in production_set:
             if term.startswith('#'):
-                self.codegeny.generate_code(term, self.next_token)
+                token = self.next_token.split(', ')[1][0:-1]
+                self.codegeny.generate_code(term, token)
             elif term in self.NON_TERMINALS:
                 child_node = self.parsie(term)
                 if child_node is not None:
