@@ -43,6 +43,7 @@ class Codegen:
         self.scope_stack = []
         self.break_back_patch_list = []
         self.ready_function_param_list = []
+        self.ready_function_address = 0
         self.temp_symbol_table = []
         self.compile_time_address_call_stack = []
         self.compile_time_address_call_stack_counter = []
@@ -228,16 +229,16 @@ class Codegen:
                 self.compile_time_address_call_stack_counter[-1] += 1
             self.program_block.append(f'(ASSIGN, {len(self.program_block)+2}, @{self.CALL_STACK_HEAD}, )')
             self.program_block.append(f'(ADD, #4, {self.CALL_STACK_HEAD}, {self.CALL_STACK_HEAD})')
+            self.program_block.append(f'(JP, {self.ready_function_address}, , )')
 
 
 
 
-            new_temp_address = 0
             # Create jump for calling # TODO dodododododododododododododododododododododododododododododo
-            self.semantic_multi_pop(2)
-            self.semantic_stack.append(new_temp_address)
         elif action_symbol == 'get_function_ready':
             for symbol in self.masmal_symbol_table:
                 if symbol.pvf == 'func' and symbol.lexeme == self.semantic_stack[-1]:
                     self.ready_function_param_list = symbol.param_list
+                    self.ready_function_address = symbol.address
+                    break
 
