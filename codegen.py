@@ -241,4 +241,3 @@ class Codegen:
                     self.ready_function_param_list = symbol.param_list
                     self.ready_function_address = symbol.address
                     break
-

@@ -216,8 +216,6 @@ class Parser:
     next_token_symbol = None
     reached_EOF = False
 
-    if 1 == 1:
-        print("sag")
 
     def __init__(self):
         self.syntax_error_writer = fw.SyntaxErrorWriter()
