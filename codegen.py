@@ -158,7 +158,7 @@ class Codegen:
             self.semantic_stack.append(len(self.program_block))
             self.program_block.append('empty')
         elif action_symbol == 'jpf':
-            self.program_block[self.semantic_stack[-1]] = f'(JPF, {self.semantic_stack[-2]}, {len(self.program_block)}, )'
+            self.program_block[self.semantic_stack[-1]] = f'(JPF, {self.semantic_stack[-2]}, {len(self.program_block)+1}, )'
             self.semantic_multi_pop(2)
         elif action_symbol == 'jp':
             self.program_block[self.semantic_stack[-1]] = f'(JP, {len(self.program_block)}, , )'
@@ -169,7 +169,7 @@ class Codegen:
             for break_back_patch in self.break_back_patch_list:
                 self.program_block[break_back_patch] = f'(JP, {len(self.program_block)}, , )'
         elif action_symbol == 'return_empty':
-            self.program_block.append(f'(ASSIGN, 0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
+            self.program_block.append(f'(ASSIGN, #0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
             self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
             self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
         elif action_symbol == 'return_from_stack':
@@ -178,7 +178,7 @@ class Codegen:
             self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
             self.semantic_multi_pop(1)
         elif action_symbol == 'implicit_return':
-            self.program_block.append(f'(ASSIGN, 0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
+            self.program_block.append(f'(ASSIGN, #0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
             self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
             self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
         elif action_symbol == 'assign':
