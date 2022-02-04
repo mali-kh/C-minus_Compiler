@@ -121,9 +121,9 @@ class Codegen:
             self.masmal_symbol_table.append(entry)
             self.semantic_multi_pop(2)
         elif action_symbol == 'declare_array':
-            address = self.get_var(self.semantic_stack[-1])
+            address = self.get_var(int(self.semantic_stack[-1]))
             entry = SymbolTableEntry(self.semantic_stack[-2], 'array', address, int(self.semantic_stack[-1]), self.semantic_stack[-3], len(self.scope_stack))
-            for i in range(self.semantic_stack[-1]):
+            for i in range(int(self.semantic_stack[-1])):
                 self.program_block.append(f'(ASSIGN, #0, {address + 4 * i}, )')
             self.masmal_symbol_table.append(entry)
             self.semantic_multi_pop(3)
@@ -233,7 +233,7 @@ class Codegen:
             self.semantic_multi_pop(2)
             self.semantic_stack.append(new_temp_address)
         elif action_symbol == 'pnum':
-            self.semantic_stack.append('#' + token)
+            self.semantic_stack.append(token)
         elif action_symbol == 'function_call':
             self.compile_time_address_call_stack_counter.append(0)
             for symbol in reversed(self.masmal_symbol_table):
