@@ -93,8 +93,8 @@ class Codegen:
             self.semantic_stack.pop()
 
     def generate_code(self, action_symbol, token):
-        # print(f'{action_symbol} {token}\n///////////////')
-        # self.print_program()
+        print(f'{action_symbol} {token}\n///////////////')
+        self.print_program()
         action_symbol = action_symbol[1:]
         if action_symbol == 'declare_pid':  # Push ID itself
             self.semantic_stack.append(token)
@@ -260,7 +260,7 @@ class Codegen:
         elif action_symbol == 'function_call':
             self.compile_time_address_call_stack_counter.append(0)
             for symbol in reversed(self.masmal_symbol_table):
-                if symbol.scope < len(self.scope_stack):
+                if symbol.pvf == 'func':
                     break
                 self.program_block.append(f'(ASSIGN, {symbol.address}, @{self.CALL_STACK_HEAD}, )')
                 self.program_block.append(f'(ADD, #4, {self.CALL_STACK_HEAD}, {self.CALL_STACK_HEAD})')
