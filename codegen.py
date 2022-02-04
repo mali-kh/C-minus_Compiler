@@ -267,7 +267,7 @@ class Codegen:
             for i in range(self.compile_time_address_call_stack_counter[-1]):
                 address = self.compile_time_address_call_stack.pop()
                 self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
-                self.program_block.append(f'(ASSIGN, {self.CALL_STACK_HEAD}, {address}, )')
+                self.program_block.append(f'(ASSIGN, @{self.CALL_STACK_HEAD}, {address}, )')
             self.compile_time_address_call_stack_counter.pop()
             self.semantic_stack.append(self.RETURN_VALUE_ADDRESS)
         elif action_symbol == 'get_function_ready':
