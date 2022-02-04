@@ -140,7 +140,7 @@ class Codegen:
             address = self.get_var(1)
             entry = SymbolTableEntry(self.semantic_stack[-1], 'pointer', address, 0, self.semantic_stack[-2], len(self.scope_stack))
             for symbol in reversed(self.masmal_symbol_table):
-                if symbol.typie == 'func':
+                if symbol.pvf == 'func':
                     symbol.param_list.append(Param(self.semantic_stack[-2], address, 'pointer'))
                     break
             self.masmal_symbol_table.append(entry)
