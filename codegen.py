@@ -42,6 +42,7 @@ class Codegen:
         self.next_empty_var_address = 504
         self.RETURN_VALUE_ADDRESS = 2500
         self.scope_stack = []
+        self.temp_scope_stack = []
         self.break_back_patch_list = []
         self.ready_function_param_list = []
         self.ready_function_address = 0
@@ -144,8 +145,10 @@ class Codegen:
             self.semantic_multi_pop(2)
         elif action_symbol == 'increase_scope':
             self.scope_stack.append(len(self.masmal_symbol_table))
+            self.temp_scope_stack.append(len(self.temp_symbol_table))
         elif action_symbol == 'decrease_scope':
             self.masmal_symbol_table = self.masmal_symbol_table[:self.scope_stack.pop()]
+            self.temp_symbol_table = self.masmal_symbol_table[:self.temp_scope_stack.pop()]
         elif action_symbol == 'pop':
             self.semantic_multi_pop(1)
         elif action_symbol == 'break_jump':
