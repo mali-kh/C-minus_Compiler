@@ -105,7 +105,7 @@ class Codegen:
         elif action_symbol == 'ptype_void':
             self.semantic_stack.append(token)
         elif action_symbol == 'parr_size':
-            self.semantic_stack.append('#' + token)
+            self.semantic_stack.append(token)
         elif action_symbol == 'label':
             self.semantic_stack.append(len(self.program_block))
         elif action_symbol == 'declare_func':
@@ -122,7 +122,7 @@ class Codegen:
             self.semantic_multi_pop(2)
         elif action_symbol == 'declare_array':
             address = self.get_var(self.semantic_stack[-1])
-            entry = SymbolTableEntry(self.semantic_stack[-2], 'array', address, self.semantic_stack[-1], self.semantic_stack[-3], len(self.scope_stack))
+            entry = SymbolTableEntry(self.semantic_stack[-2], 'array', address, int(self.semantic_stack[-1]), self.semantic_stack[-3], len(self.scope_stack))
             for i in range(self.semantic_stack[-1]):
                 self.program_block.append(f'(ASSIGN, #0, {address + 4 * i}, )')
             self.masmal_symbol_table.append(entry)
