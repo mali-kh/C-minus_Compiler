@@ -81,7 +81,7 @@ class ParseTreeWriter(Writer):
 
 class IntermediateCodeWriter(Writer):
     def __init__(self):
-        super().__init__('output')
+        super().__init__('output.txt')
 
     def write_code(self, code):
         self.file.write(code)

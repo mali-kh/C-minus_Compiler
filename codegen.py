@@ -56,7 +56,6 @@ class Codegen:
         self.program_block.append(f'(ASSIGN, 0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
         self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
         self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
-        self.semantic_stack.append(self.RETURN_VALUE_ADDRESS)
 
         self.program_block.append('')  # Jump to main
 
@@ -154,18 +153,15 @@ class Codegen:
             self.program_block.append(f'(ASSIGN, 0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
             self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
             self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
-            self.semantic_stack.append(self.RETURN_VALUE_ADDRESS)
         elif action_symbol == 'return_from_stack':
             self.program_block.append(f'(ASSIGN, {self.semantic_stack[-1]}, {self.RETURN_VALUE_ADDRESS}, )')
             self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
             self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
             self.semantic_multi_pop(1)
-            self.semantic_stack.append(self.RETURN_VALUE_ADDRESS)
         elif action_symbol == 'implicit_return':
             self.program_block.append(f'(ASSIGN, 0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
             self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
             self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
-            self.semantic_stack.append(self.RETURN_VALUE_ADDRESS)
         elif action_symbol == 'assign':
             self.program_block.append(f'(ASSIGN, {self.semantic_stack[-1]}, {self.semantic_stack[-2]}, )')
             self.semantic_multi_pop(1)  # We pop only one and leave the other one for later use
@@ -249,6 +245,7 @@ class Codegen:
                 self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
                 self.program_block.append(f'(ASSIGN, {self.CALL_STACK_HEAD}, {address}, )')
             self.compile_time_address_call_stack_counter.pop()
+            self.semantic_stack.append(self.RETURN_VALUE_ADDRESS)
         elif action_symbol == 'get_function_ready':
             for symbol in self.masmal_symbol_table:
                 if symbol.pvf == 'func' and symbol.lexeme == self.semantic_stack[-1]:
@@ -259,7 +256,7 @@ class Codegen:
     def write_generated_code(self):
         code_string = ''
         for i in range(len(self.program_block)):
-            code_string += f'{i}\t{self.program_block[i]}'
+            code_string += f'{i}\t{self.program_block[i]}\n'
         self.code_writer.write_code(code_string)
         self.code_writer.close()
 
