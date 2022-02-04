@@ -170,6 +170,7 @@ class Codegen:
             self.semantic_multi_pop(2)
             for break_back_patch in self.break_back_patch_list:
                 self.program_block[break_back_patch] = f'(JP, {len(self.program_block)}, , )'
+            self.break_back_patch_list = []
         elif action_symbol == 'return_empty':
             self.program_block.append(f'(ASSIGN, #0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
             self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
