@@ -197,6 +197,7 @@ class Codegen:
                 new_address = self.get_temp()
                 self.program_block.append(f'(MULT, {self.semantic_stack[-1]}, #4, {new_address})')
                 self.program_block.append(f'(ADD, {new_address}, {self.semantic_stack[-2]}, {new_address})')
+                new_address = '@' + str(new_address)
             self.semantic_multi_pop(2)
             self.semantic_stack.append(new_address)
         elif action_symbol == 'calculate_relation':
@@ -292,3 +293,8 @@ class Codegen:
         self.code_writer.write_code(code_string)
         self.code_writer.close()
 
+    def pop_three_useless_codes(self):
+        self.program_block.pop()
+        self.program_block.pop()
+        self.program_block.pop()
+        self.program_block.pop()

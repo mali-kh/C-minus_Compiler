@@ -298,4 +298,5 @@ class Parser:
         self.parse_tree_writer.write_parse_tree(parsed_code)
         self.syntax_error_writer.close()
         self.parse_tree_writer.close()
+        self.codegeny.pop_three_useless_codes()
         self.codegeny.write_generated_code()
