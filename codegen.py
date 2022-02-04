@@ -194,16 +194,28 @@ class Codegen:
             self.program_block.append(f'(ASSIGN, {self.semantic_stack[-1]}, {self.semantic_stack[-2]}, )')
             self.semantic_multi_pop(1)  # We pop only one and leave the other one for later use
         elif action_symbol == 'get_array_element':
-            new_address = ''
+            very_new_address = ''
+            the_pvf = ''
+            for symbol in reversed(self.masmal_symbol_table):
+                if symbol.address == self.semantic_stack[-2]:
+                    the_pvf = symbol.pvf
+                    break
             if str(self.semantic_stack[-1])[0] == '#':
-                new_address = self.semantic_stack[-2] + int(self.semantic_stack[-1][1:]) * 4
+                if the_pvf == 'pointer':
+                    very_new_address = self.get_temp()
+                    self.program_block.append(f'(ADD, {int(self.semantic_stack[-1][1:])*4}, {self.semantic_stack[-2]}, {very_new_address})')
+                else:
+                    very_new_address = self.semantic_stack[-2] + int(self.semantic_stack[-1][1:]) * 4
             else:
-                new_address = self.get_temp()
-                self.program_block.append(f'(MULT, {self.semantic_stack[-1]}, #4, {new_address})')
-                self.program_block.append(f'(ADD, {new_address}, #{self.semantic_stack[-2]}, {new_address})')
-                new_address = '@' + str(new_address)
+                very_new_address = self.get_temp()
+                self.program_block.append(f'(MULT, {self.semantic_stack[-1]}, #4, {very_new_address})')
+                if the_pvf == 'pointer':
+                    self.program_block.append(f'(ADD, {very_new_address}, {self.semantic_stack[-2]}, {very_new_address})')
+                else:
+                    self.program_block.append(f'(ADD, {very_new_address}, #{self.semantic_stack[-2]}, {very_new_address})')
+                very_new_address = '@' + str(very_new_address)
             self.semantic_multi_pop(2)
-            self.semantic_stack.append(new_address)
+            self.semantic_stack.append(very_new_address)
         elif action_symbol == 'calculate_relation':
             operator = ''
             if self.semantic_stack[-2] == '<':
