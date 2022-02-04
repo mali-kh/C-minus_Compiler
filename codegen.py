@@ -46,7 +46,7 @@ class Codegen:
         self.temp_scope_stack = []
         self.break_back_patch_list = []
         self.ready_function_param_list = []
-        self.ready_function_address = 0
+        self.ready_function_address = []
         self.temp_symbol_table = []
         self.compile_time_address_call_stack = []
         self.compile_time_address_call_stack_counter = []
@@ -280,7 +280,7 @@ class Codegen:
                 self.compile_time_address_call_stack.append(symbol.address)
                 self.compile_time_address_call_stack_counter[-1] += 1
             # Put Arguments
-            for paramie in reversed(self.ready_function_param_list):
+            for paramie in reversed(self.ready_function_param_list[-1]):
                 if paramie.pvf == 'pointer':
                     for symbol in self.masmal_symbol_table:
                         if symbol.address == self.semantic_stack[-1]:
@@ -295,7 +295,9 @@ class Codegen:
             # Jump to function body
             self.program_block.append(f'(ASSIGN, #{len(self.program_block)+3}, @{self.CALL_STACK_HEAD}, )')
             self.program_block.append(f'(ADD, #4, {self.CALL_STACK_HEAD}, {self.CALL_STACK_HEAD})')
-            self.program_block.append(f'(JP, {self.ready_function_address}, , )')
+            self.program_block.append(f'(JP, {self.ready_function_address[-1]}, , )')
+            self.ready_function_address.pop()
+            self.ready_function_param_list.pop()
             for i in range(self.compile_time_address_call_stack_counter[-1]):
                 address = self.compile_time_address_call_stack.pop()
                 self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
@@ -305,10 +307,10 @@ class Codegen:
             self.program_block.append(f'(ASSIGN, {self.RETURN_VALUE_ADDRESS}, {new_temp_address}, )')
             self.semantic_stack.append(new_temp_address)
         elif action_symbol == 'get_function_ready':
-            self.ready_function_address = self.semantic_stack[-1]
+            self.ready_function_address.append(self.semantic_stack[-1])
             for symbol in self.masmal_symbol_table:
                 if symbol.pvf == 'func' and symbol.address == self.semantic_stack[-1]:
-                    self.ready_function_param_list = symbol.param_list
+                    self.ready_function_param_list.append(symbol.param_list)
                     # for i in range(len(symbol.param_list)):
                     #     print(f'{symbol.param_list[i].address} from {symbol.lexeme} in {symbol.address} or {self.semantic_stack[-1]}')
                     break
@@ -325,5 +327,3 @@ class Codegen:
         self.program_block.pop()
         self.program_block.pop()
         self.program_block.pop()
-
-# Yessssssssssssssssssss
