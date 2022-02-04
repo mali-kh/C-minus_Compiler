@@ -37,6 +37,7 @@ class Codegen:
         self.masmal_symbol_table = []
         self.program_block = []
         self.next_empty_temp_address = 2000
+        self.CALL_STACK_JUMP_TEMP = 996  # Put jump address in here before return jump
         self.CALL_STACK_HEAD = 1000  # This is a pointer to call stack head
         self.PRINT_PARAMETER = 500
         self.next_empty_var_address = 504
@@ -61,7 +62,8 @@ class Codegen:
         self.program_block.append(f'(PRINT, {self.PRINT_PARAMETER}, , )')
         self.program_block.append(f'(ASSIGN, #0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
         self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
-        self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
+        self.program_block.append(f'(ASSIGN, @{self.CALL_STACK_HEAD}, {self.CALL_STACK_JUMP_TEMP}, )')
+        self.program_block.append(f'(JP, @{self.CALL_STACK_JUMP_TEMP}, , )')
 
     def print_program(self):
         print(self.semantic_stack)
@@ -171,16 +173,19 @@ class Codegen:
         elif action_symbol == 'return_empty':
             self.program_block.append(f'(ASSIGN, #0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
             self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
-            self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
+            self.program_block.append(f'(ASSIGN, @{self.CALL_STACK_HEAD}, {self.CALL_STACK_JUMP_TEMP}, )')
+            self.program_block.append(f'(JP, @{self.CALL_STACK_JUMP_TEMP}, , )')
         elif action_symbol == 'return_from_stack':
             self.program_block.append(f'(ASSIGN, {self.semantic_stack[-1]}, {self.RETURN_VALUE_ADDRESS}, )')
             self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
-            self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
+            self.program_block.append(f'(ASSIGN, @{self.CALL_STACK_HEAD}, {self.CALL_STACK_JUMP_TEMP}, )')
+            self.program_block.append(f'(JP, @{self.CALL_STACK_JUMP_TEMP}, , )')
             self.semantic_multi_pop(1)
         elif action_symbol == 'implicit_return':
             self.program_block.append(f'(ASSIGN, #0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
             self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
-            self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
+            self.program_block.append(f'(ASSIGN, @{self.CALL_STACK_HEAD}, {self.CALL_STACK_JUMP_TEMP}, )')
+            self.program_block.append(f'(JP, @{self.CALL_STACK_JUMP_TEMP}, , )')
         elif action_symbol == 'assign':
             self.program_block.append(f'(ASSIGN, {self.semantic_stack[-1]}, {self.semantic_stack[-2]}, )')
             self.semantic_multi_pop(1)  # We pop only one and leave the other one for later use
