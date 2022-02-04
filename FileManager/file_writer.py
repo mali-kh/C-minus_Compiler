@@ -85,3 +85,11 @@ class IntermediateCodeWriter(Writer):
 
     def write_code(self, code):
         self.file.write(code)
+
+
+class SemanticErrorWriter(Writer):
+    def __init__(self):
+        super().__init__('semantic_errors.txt')
+
+    def write_errors(self, errorie):
+        self.file.write(errorie)

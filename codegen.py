@@ -33,6 +33,7 @@ class SymbolTableFunction(SymbolTableEntry):
 class Codegen:
     def __init__(self):
         self.code_writer = fw.IntermediateCodeWriter()
+        self.error_writer = fw.SemanticErrorWriter()
         self.semantic_stack = []
         self.masmal_symbol_table = []
         self.program_block = []
@@ -50,6 +51,8 @@ class Codegen:
         self.temp_symbol_table = []
         self.compile_time_address_call_stack = []
         self.compile_time_address_call_stack_counter = []
+
+        self.semantic_errors = []
 
         self.program_block.append(f'(ASSIGN, #1004, {self.CALL_STACK_HEAD}, )')
 
@@ -87,6 +90,7 @@ class Codegen:
         for symbol in reversed(self.masmal_symbol_table):
             if symbol.lexeme == lexeme:
                 return symbol.address
+
 
     def semantic_multi_pop(self, pop_count):
         for i in range(pop_count):
@@ -321,6 +325,13 @@ class Codegen:
             code_string += f'{i}\t{self.program_block[i]}\n'
         self.code_writer.write_code(code_string)
         self.code_writer.close()
+        if len(self.semantic_errors) == 0:
+            self.error_writer.write_errors('The input program is semantically correct')
+        else:
+            error_string = ''
+            for error in self.semantic_errors:
+                error_string += 'err'  # FIXME please
+            self.error_writer.write_errors(error_string)
 
     def pop_three_useless_codes(self):
         self.program_block.pop()
