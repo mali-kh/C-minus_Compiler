@@ -49,7 +49,7 @@ class Codegen:
         self.compile_time_address_call_stack = []
         self.compile_time_address_call_stack_counter = []
 
-        self.program_block.append(f'(ASSIGN, 1004, {self.CALL_STACK_HEAD}, )')
+        self.program_block.append(f'(ASSIGN, #1004, {self.CALL_STACK_HEAD}, )')
 
         self.program_block.append('')  # Jump to main
 
