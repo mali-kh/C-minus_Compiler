@@ -281,7 +281,10 @@ class Codegen:
                 self.compile_time_address_call_stack_counter[-1] += 1
             # Put Arguments
             for paramie in reversed(self.ready_function_param_list):
-                self.program_block.append(f'(ASSIGN, {self.semantic_stack.pop()}, {paramie.address}, )')
+                if paramie.pvf == 'pointer':
+                    self.program_block.append(f'(ASSIGN, #{self.semantic_stack.pop()}, {paramie.address}, )')
+                else:
+                    self.program_block.append(f'(ASSIGN, {self.semantic_stack.pop()}, {paramie.address}, )')
             self.semantic_stack.pop()  # Accidentally didn't use the function name so I'll just pop it and never think about it again
             # Jump to function body
             self.program_block.append(f'(ASSIGN, #{len(self.program_block)+3}, @{self.CALL_STACK_HEAD}, )')
