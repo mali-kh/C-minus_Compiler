@@ -19,7 +19,7 @@ class Parser:
                    'Statement': [['Expression-stmt'], ['Compound-stmt'], ['Selection-stmt'], ['Iteration-stmt'], ['Return-stmt']],
                    'Expression-stmt': [['Expression', '#pop', ';'], ['break', '#break_jump', ';'], [';']],
                    'Selection-stmt': [['if', '(', 'Expression', ')', '#save', '#increase_scope', 'Statement', '#decrease_scope', 'Else-stmt']],
-                   'Else-stmt': [['#jpf', 'endif'], ['else', '#jpf', '#save', '#increase_scope', 'Statement', '#decrease_scope', '#jp', 'endif']],
+                   'Else-stmt': [['#jpf', 'endif'], ['else', '#jpf_with_else', '#save', '#increase_scope', 'Statement', '#decrease_scope', '#jp', 'endif']],
                    'Iteration-stmt': [['repeat', '#label', '#increase_scope', 'Statement', '#decrease_scope', 'until', '(', 'Expression', '#until', ')']],
                    'Return-stmt': [['return', 'Return-stmt-prime']],
                    'Return-stmt-prime': [['#return_empty', ';'], ['Expression', '#return_from_stack', ';']],

@@ -160,6 +160,9 @@ class Codegen:
             self.semantic_stack.append(len(self.program_block))
             self.program_block.append('empty')
         elif action_symbol == 'jpf':
+            self.program_block[self.semantic_stack[-1]] = f'(JPF, {self.semantic_stack[-2]}, {len(self.program_block)}, )'
+            self.semantic_multi_pop(2)
+        elif action_symbol == 'jpf_with_else':
             self.program_block[self.semantic_stack[-1]] = f'(JPF, {self.semantic_stack[-2]}, {len(self.program_block)+1}, )'
             self.semantic_multi_pop(2)
         elif action_symbol == 'jp':
