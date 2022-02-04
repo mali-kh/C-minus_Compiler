@@ -49,9 +49,9 @@ class Codegen:
         self.compile_time_address_call_stack = []
         self.compile_time_address_call_stack_counter = []
 
-        self.program_block.append('')  # Jump to main
-
         self.program_block.append(f'(ASSIGN, 1004, {self.CALL_STACK_HEAD}, )')
+
+        self.program_block.append('')  # Jump to main
 
         output_func_symbol = SymbolTableFunction('output', 'func', 2, 0, 'void', 0)
         output_func_symbol.param_list.append(Param('int', 500, 'var'))
@@ -109,7 +109,7 @@ class Codegen:
             entry = SymbolTableFunction(self.semantic_stack[-2], 'func', self.semantic_stack[-1], 0, self.semantic_stack[-3], len(self.scope_stack))
             self.masmal_symbol_table.append(entry)
             if self.semantic_stack[-2] == 'main':
-                self.program_block[0] = f'(JP, {len(self.program_block)}, , )'
+                self.program_block[1] = f'(JP, {len(self.program_block)}, , )'
             self.semantic_multi_pop(3)
         elif action_symbol == 'declare_var':
             address = self.get_var(1)
