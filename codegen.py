@@ -59,7 +59,7 @@ class Codegen:
         self.masmal_symbol_table.append(output_func_symbol)
 
         self.program_block.append(f'(PRINT, {self.PRINT_PARAMETER}, , )')
-        self.program_block.append(f'(ASSIGN, 0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
+        self.program_block.append(f'(ASSIGN, #0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
         self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
         self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
 
