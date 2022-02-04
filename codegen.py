@@ -53,11 +53,22 @@ class Codegen:
 
         self.program_block.append(f'(ASSIGN, 1004, {self.CALL_STACK_HEAD}, )')
 
-        self.masmal_symbol_table.append(SymbolTableFunction('output', 'func', 2, 0, 'void', 0))
+        output_func_symbol = SymbolTableFunction('output', 'func', 2, 0, 'void', 0)
+        output_func_symbol.param_list.append(Param('int', 500, 'var'))
+        self.masmal_symbol_table.append(output_func_symbol)
+
         self.program_block.append(f'(PRINT, {self.PRINT_PARAMETER}, , )')
         self.program_block.append(f'(ASSIGN, 0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
         self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
         self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
+
+    def print_program(self):
+        print(self.semantic_stack)
+        for item in self.masmal_symbol_table:
+            print(f'{item.lexeme}\t{item.address}')
+        for i in range(len(self.program_block)):
+            print(f'{i}\t{self.program_block[i]}')
+        print("////////////////////////////////////")
 
     def get_temp(self):
         address = self.next_empty_temp_address
@@ -79,6 +90,8 @@ class Codegen:
             self.semantic_stack.pop()
 
     def generate_code(self, action_symbol, token):
+        # print(f'{action_symbol} {token}\n///////////////')
+        # self.print_program()
         action_symbol = action_symbol[1:]
         if action_symbol == 'declare_pid':  # Push ID itself
             self.semantic_stack.append(token)
@@ -137,7 +150,7 @@ class Codegen:
             self.program_block.append('')
         elif action_symbol == 'save':
             self.semantic_stack.append(len(self.program_block))
-            self.program_block.append('')
+            self.program_block.append('empty')
         elif action_symbol == 'jpf':
             self.program_block[self.semantic_stack[-1]] = f'(JPF, {self.semantic_stack[-2]}, {len(self.program_block)}, )'
             self.semantic_multi_pop(2)
@@ -247,10 +260,10 @@ class Codegen:
             self.compile_time_address_call_stack_counter.pop()
             self.semantic_stack.append(self.RETURN_VALUE_ADDRESS)
         elif action_symbol == 'get_function_ready':
+            self.ready_function_address = self.semantic_stack[-1]
             for symbol in self.masmal_symbol_table:
-                if symbol.pvf == 'func' and symbol.lexeme == self.semantic_stack[-1]:
+                if symbol.pvf == 'func':
                     self.ready_function_param_list = symbol.param_list
-                    self.ready_function_address = symbol.address
                     break
 
     def write_generated_code(self):
