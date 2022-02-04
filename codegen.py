@@ -114,11 +114,14 @@ class Codegen:
         elif action_symbol == 'declare_var':
             address = self.get_var(1)
             entry = SymbolTableEntry(self.semantic_stack[-1], 'var', address, 0, self.semantic_stack[-2], len(self.scope_stack))
+            self.program_block.append(f'(ASSIGN, #0, {address}, )')
             self.masmal_symbol_table.append(entry)
             self.semantic_multi_pop(2)
         elif action_symbol == 'declare_array':
             address = self.get_var(self.semantic_stack[-1])
             entry = SymbolTableEntry(self.semantic_stack[-2], 'array', address, self.semantic_stack[-1], self.semantic_stack[-3], len(self.scope_stack))
+            for i in range(self.semantic_stack[-1]):
+                self.program_block.append(f'(ASSIGN, #0, {address + 4 * i}, )')
             self.masmal_symbol_table.append(entry)
             self.semantic_multi_pop(3)
         elif action_symbol == 'declare_var_param':
