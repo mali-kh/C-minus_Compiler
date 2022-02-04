@@ -38,7 +38,8 @@ class Codegen:
         self.program_block = []
         self.next_empty_temp_address = 2000
         self.CALL_STACK_HEAD = 1000  # This is a pointer to call stack head
-        self.next_empty_var_address = 500
+        self.PRINT_PARAMETER = 500
+        self.next_empty_var_address = 504
         self.RETURN_VALUE_ADDRESS = 2500
         self.scope_stack = []
         self.break_back_patch_list = []
@@ -49,6 +50,14 @@ class Codegen:
         self.compile_time_address_call_stack_counter = []
 
         self.program_block.append(f'(ASSIGN, 1004, {self.CALL_STACK_HEAD}, )')
+
+        self.masmal_symbol_table.append(SymbolTableFunction('output', 'func', 1, 0, 'void', 0))
+        self.program_block.append(f'(PRINT, {self.PRINT_PARAMETER}, , )')
+        self.program_block.append(f'(ASSIGN, 0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
+        self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
+        self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
+        self.semantic_stack.append(self.RETURN_VALUE_ADDRESS)
+
         self.program_block.append('')  # Jump to main
 
     def get_temp(self):
@@ -239,20 +248,18 @@ class Codegen:
                 address = self.compile_time_address_call_stack.pop()
                 self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
                 self.program_block.append(f'(ASSIGN, {self.CALL_STACK_HEAD}, {address}, )')
-
-
-
-
-
-
             self.compile_time_address_call_stack_counter.pop()
-            # Create jump for calling # TODO dodododododododododododododododododododododododododododododo
-
-
-
         elif action_symbol == 'get_function_ready':
             for symbol in self.masmal_symbol_table:
                 if symbol.pvf == 'func' and symbol.lexeme == self.semantic_stack[-1]:
                     self.ready_function_param_list = symbol.param_list
                     self.ready_function_address = symbol.address
                     break
+
+    def write_generated_code(self):
+        code_string = ''
+        for i in range(len(self.program_block)):
+            code_string += f'{i}\t{self.program_block[i]}'
+        self.code_writer.write_code(code_string)
+        self.code_writer.close()
+

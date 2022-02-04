@@ -79,10 +79,9 @@ class ParseTreeWriter(Writer):
         self.file.write(stringy)
 
 
-class IntermediateCodeWriter:
+class IntermediateCodeWriter(Writer):
     def __init__(self):
-        self.lineno = 0
-        pass
+        super().__init__('output')
 
     def write_code(self, code):
-        pass
+        self.file.write(code)
