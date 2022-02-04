@@ -187,10 +187,10 @@ class Codegen:
             self.program_block.append(f'(ASSIGN, @{self.CALL_STACK_HEAD}, {self.CALL_STACK_JUMP_TEMP}, )')
             self.program_block.append(f'(JP, @{self.CALL_STACK_JUMP_TEMP}, , )')
         elif action_symbol == 'assign':
-            self.program_block.append(f'(ASSIGN, {self.semantic_stack[-1]}, {self.semantic_stack[-2]}, )')
+            self.program_block.append(f'(ASSIGN, #{self.semantic_stack[-1]}, {self.semantic_stack[-2]}, )')
             self.semantic_multi_pop(1)  # We pop only one and leave the other one for later use
         elif action_symbol == 'get_array_element':
-            new_address = self.semantic_stack[-2] + self.semantic_stack[-1] * 4
+            new_address = int(self.semantic_stack[-2]) + int(self.semantic_stack[-1]) * 4
             self.semantic_multi_pop(2)
             self.semantic_stack.append(new_address)
         elif action_symbol == 'calculate_relation':
