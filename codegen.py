@@ -190,7 +190,13 @@ class Codegen:
             self.program_block.append(f'(ASSIGN, #{self.semantic_stack[-1]}, {self.semantic_stack[-2]}, )')
             self.semantic_multi_pop(1)  # We pop only one and leave the other one for later use
         elif action_symbol == 'get_array_element':
-            new_address = int(self.semantic_stack[-2]) + int(self.semantic_stack[-1]) * 4
+            new_address = ''
+            if self.semantic_stack[-1][0] == '#':
+                new_address = self.semantic_stack[-2] + int(self.semantic_stack[-1][1:]) * 4
+            else:
+                new_address = self.get_temp()
+                self.program_block.append(f'(MULT, {self.semantic_stack[-1]}, #4, {new_address})')
+                self.program_block.append(f'(ADD, {new_address}, {self.semantic_stack[-2]}, {new_address})')
             self.semantic_multi_pop(2)
             self.semantic_stack.append(new_address)
         elif action_symbol == 'calculate_relation':
@@ -233,7 +239,7 @@ class Codegen:
             self.semantic_multi_pop(2)
             self.semantic_stack.append(new_temp_address)
         elif action_symbol == 'pnum':
-            self.semantic_stack.append(token)
+            self.semantic_stack.append('#' + token)
         elif action_symbol == 'function_call':
             self.compile_time_address_call_stack_counter.append(0)
             for symbol in reversed(self.masmal_symbol_table):
