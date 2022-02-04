@@ -49,15 +49,15 @@ class Codegen:
         self.compile_time_address_call_stack = []
         self.compile_time_address_call_stack_counter = []
 
+        self.program_block.append('')  # Jump to main
+
         self.program_block.append(f'(ASSIGN, 1004, {self.CALL_STACK_HEAD}, )')
 
-        self.masmal_symbol_table.append(SymbolTableFunction('output', 'func', 1, 0, 'void', 0))
+        self.masmal_symbol_table.append(SymbolTableFunction('output', 'func', 2, 0, 'void', 0))
         self.program_block.append(f'(PRINT, {self.PRINT_PARAMETER}, , )')
         self.program_block.append(f'(ASSIGN, 0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
         self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
         self.program_block.append(f'(JP, @{self.CALL_STACK_HEAD}, , )')
-
-        self.program_block.append('')  # Jump to main
 
     def get_temp(self):
         address = self.next_empty_temp_address
