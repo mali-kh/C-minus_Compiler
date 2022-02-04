@@ -256,7 +256,7 @@ class Codegen:
                 self.program_block.append(f'(ASSIGN, {self.semantic_stack.pop()}, {paramie.address}, )')
             self.semantic_stack.pop()  # Accidentally didn't use the function name so I'll just pop it and never think about it again
             # Jump to function body
-            self.program_block.append(f'(ASSIGN, {len(self.program_block)+3}, @{self.CALL_STACK_HEAD}, )')
+            self.program_block.append(f'(ASSIGN, #{len(self.program_block)+3}, @{self.CALL_STACK_HEAD}, )')
             self.program_block.append(f'(ADD, #4, {self.CALL_STACK_HEAD}, {self.CALL_STACK_HEAD})')
             self.program_block.append(f'(JP, {self.ready_function_address}, , )')
             for i in range(self.compile_time_address_call_stack_counter[-1]):
@@ -268,8 +268,10 @@ class Codegen:
         elif action_symbol == 'get_function_ready':
             self.ready_function_address = self.semantic_stack[-1]
             for symbol in self.masmal_symbol_table:
-                if symbol.pvf == 'func':
+                if symbol.pvf == 'func' and symbol.address == self.semantic_stack[-1]:
                     self.ready_function_param_list = symbol.param_list
+                    # for i in range(len(symbol.param_list)):
+                    #     print(f'{symbol.param_list[i].address} from {symbol.lexeme} in {symbol.address} or {self.semantic_stack[-1]}')
                     break
 
     def write_generated_code(self):
