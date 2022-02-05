@@ -15,6 +15,9 @@ class SemanticChecker:
         self.codegen = codegen
 
     def check(self, action_symbol, token, lineno):
+        # for err in self.error_list:
+        #     print(err)
+        # print('100101010101001001010101')
         action_symbol = action_symbol[1:]
         if action_symbol == 'pid':
             for symbol in reversed(self.codegen.masmal_symbol_table):
@@ -63,7 +66,7 @@ class SemanticChecker:
             self.repeat_count -= 1
         elif action_symbol == 'break_jump':
             if self.repeat_count == 0:
-                self.error_list.append(f'#{lineno} : Semantic Error!  No \'repeat ... until\' found for \'break\'.')
+                self.error_list.append(f'#{lineno} : Semantic Error! No \'repeat ... until\' found for \'break\'.')
 
     def write_errors(self):
         if len(self.error_list) == 0:

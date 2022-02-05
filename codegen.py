@@ -112,6 +112,9 @@ class Codegen:
                     else:
                         self.id_pvfs.append('num')
                     break
+            else:
+                self.id_pvfs.append('num')
+                self.semantic_stack.append('#0')
         elif action_symbol == 'ptype_int':
             self.semantic_stack.append(token)
         elif action_symbol == 'ptype_void':
@@ -181,6 +184,8 @@ class Codegen:
             self.id_pvfs.pop()
             self.semantic_multi_pop(2)
         elif action_symbol == 'jp':
+            if str(self.semantic_stack[-1])[0] == '@':
+                self.semantic_stack.append(0)
             self.program_block[self.semantic_stack[-1]] = f'(JP, {len(self.program_block)}, , )'
             self.semantic_multi_pop(1)
         elif action_symbol == 'until':
@@ -237,9 +242,14 @@ class Codegen:
                 very_new_address = '@' + str(very_new_address)
             self.semantic_multi_pop(2)
             self.semantic_stack.append(very_new_address)
-            if self.id_pvfs[-1] == 'arr':
-                self.id_pvfs[-1] = 'num'
+            self.id_pvfs.pop()
+            self.id_pvfs.pop()
+            self.id_pvfs.append('num')
         elif action_symbol == 'relnum_op':
+            if str(self.semantic_stack[-1])[0] == '@':
+                self.semantic_stack[-1] = '#0'
+            if str(self.semantic_stack[-2])[0] == '@':
+                self.semantic_stack[-2] = '#0'
             self.id_pvfs.pop()
             self.id_pvfs.pop()
             self.id_pvfs.append('num')
