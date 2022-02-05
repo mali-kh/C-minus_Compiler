@@ -1,7 +1,11 @@
+import FileManager.file_writer as fw
+
+
 class SemanticChecker:
     def __init__(self):
         self.codegen = None
         self.error_list = []
+        self.writer = fw.SemanticErrorWriter()
 
         self.declaration_name = ''
         self.arg_count = []
@@ -43,11 +47,13 @@ class SemanticChecker:
             min_len = min(len(self.codegen.ready_function_param_list[-1]), self.arg_count[-1])
             for i in range(min_len):
                 param_type = self.codegen.ready_function_param_list[-1][i].pvf
-                arg_type = self.codegen.id_pvfs[i-self.arg_count[-1]]
+                arg_type = self.codegen.id_pvfs[i - self.arg_count[-1]]
                 if param_type == 'pointer' and arg_type != 'arr':
-                    self.error_list.append(f'#{lineno} : Semantic Error! Mismatch in type of argument {i+1} of \'{self.codegen.ready_function_lexeme_for_checker[-1]}\'. Expected \'array\' but got \'int\' instead.')
+                    self.error_list.append(
+                        f'#{lineno} : Semantic Error! Mismatch in type of argument {i + 1} of \'{self.codegen.ready_function_lexeme_for_checker[-1]}\'. Expected \'array\' but got \'int\' instead.')
                 if param_type == 'var' and arg_type != 'num':
-                    self.error_list.append(f'#{lineno} : Semantic Error! Mismatch in type of argument {i+1} of \'{self.codegen.ready_function_lexeme_for_checker[-1]}\'. Expected \'int\' but got \'array\' instead.')
+                    self.error_list.append(
+                        f'#{lineno} : Semantic Error! Mismatch in type of argument {i + 1} of \'{self.codegen.ready_function_lexeme_for_checker[-1]}\'. Expected \'int\' but got \'array\' instead.')
             if len(self.codegen.ready_function_param_list[-1]) != self.arg_count[-1]:
                 self.error_list.append(f'#{lineno} : Semantic Error! Mismatch in numbers of arguments of \'{self.codegen.ready_function_lexeme_for_checker[-1]}\'.')
             self.arg_count.pop()
@@ -59,7 +65,12 @@ class SemanticChecker:
             if self.repeat_count == 0:
                 self.error_list.append(f'#{lineno} : Semantic Error!  No \'repeat ... until\' found for \'break\'.')
 
-
-
     def write_errors(self):
-        pass # FIXME
+        if len(self.error_list) == 0:
+            self.writer.write_errors('The input program is semantically correct')
+        else:
+            error_string = ''
+            for err in self.error_list:
+                error_string += err + '\n'
+            self.writer.write_errors(error_string)
+        self.writer.close()

@@ -7,7 +7,7 @@ class Parser:
                    'Declaration': [['Declaration-initial', 'Declaration-prime']],
                    'Declaration-initial': [['Type-specifier', '#declare_pid', 'ID']],
                    'Declaration-prime': [['#label', '#declare_func', '#increase_scope', 'Fun-declaration-prime', '#decrease_scope'], ['Var-declaration-prime']],
-                   'Var-declaration-prime': [[';', '#declare_var'], ['[', '#parr_size', 'NUM', ']', ';', '#declare_array']],
+                   'Var-declaration-prime': [['#declare_var', ';'], ['[', '#parr_size', 'NUM', ']', '#declare_array', ';']],
                    'Fun-declaration-prime': [['(', 'Params', ')', 'Compound-stmt', '#implicit_return']],
                    'Type-specifier': [['#ptype_int', 'int'], ['#ptype_void', 'void']],
                    'Params': [['#ptype_int', 'int', '#declare_pid', 'ID', 'Param-prime', 'Param-list'], ['void']],
@@ -231,6 +231,7 @@ class Parser:
     def set_codegen_and_semantic_checker(self, codegen_instance, semantic_checker_instance):
         self.codegeny = codegen_instance
         self.semantic_checkerie = semantic_checker_instance
+        self.semantic_checkerie.set_codegen(self.codegeny)
 
     def get_next_token(self):
         self.next_token = self.scany.get_next_token()
@@ -304,3 +305,4 @@ class Parser:
         self.parse_tree_writer.close()
         self.codegeny.pop_three_useless_codes()
         self.codegeny.write_generated_code()
+        self.semantic_checkerie.write_errors()
