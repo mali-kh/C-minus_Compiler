@@ -269,8 +269,8 @@ class Parser:
         for term in production_set:
             if term.startswith('#'):
                 token = self.next_token.split(', ')[1][0:-1]
-                self.codegeny.generate_code(term, token)
                 self.semantic_checkerie.check(term, token, self.scany.get_lineno())
+                self.codegeny.generate_code(term, token)
             elif term in self.NON_TERMINALS:
                 child_node = self.parsie(term)
                 if child_node is not None:

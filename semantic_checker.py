@@ -14,3 +14,18 @@ class SemanticChecker:
                     break
             else:
                 self.error_list.append(f'#{lineno} : Semantic Error! \'{token}\' is not defined')
+        elif action_symbol == 'declare_var':
+            if self.codegen.semantic_stack[-2] == 'void':
+                self.error_list.append(f'#{lineno} : Semantic Error! Illegal type of void for \'{token}\'')
+        elif action_symbol == 'declare_array':
+            if self.codegen.semantic_stack[-3] == 'void':
+                self.error_list.append(f'#{lineno} : Semantic Error! Illegal type of void for \'{token}\'')
+        elif action_symbol == 'declare_var_param':
+            if self.codegen.semantic_stack[-2] == 'void':
+                self.error_list.append(f'#{lineno} : Semantic Error! Illegal type of void for \'{token}\'')
+        elif action_symbol == 'declare_pointer_param':
+            if self.codegen.semantic_stack[-2] == 'void':
+                self.error_list.append(f'#{lineno} : Semantic Error! Illegal type of void for \'{token}\'')
+
+    def write_errors(self):
+        pass # FIXME
