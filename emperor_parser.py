@@ -20,7 +20,7 @@ class Parser:
                    'Expression-stmt': [['Expression', '#pop', ';'], ['break', '#break_jump', ';'], [';']],
                    'Selection-stmt': [['if', '(', 'Expression', ')', '#save', '#increase_scope', 'Statement', '#decrease_scope', 'Else-stmt']],
                    'Else-stmt': [['#jpf', 'endif'], ['else', '#jpf_with_else', '#save', '#increase_scope', 'Statement', '#decrease_scope', '#jp', 'endif']],
-                   'Iteration-stmt': [['repeat', '#label', '#increase_scope', 'Statement', '#decrease_scope', 'until', '(', 'Expression', '#until', ')']],
+                   'Iteration-stmt': [['repeat', '#repeat_count_plus', '#label', '#increase_scope', 'Statement', '#decrease_scope', 'until', '#repeat_count_minus', '(', 'Expression', '#until', ')']],
                    'Return-stmt': [['return', 'Return-stmt-prime']],
                    'Return-stmt-prime': [['#return_empty', ';'], ['Expression', '#return_from_stack', ';']],
                    'Expression': [['Simple-expression-zegond'], ['#pid', 'ID', 'B']],
