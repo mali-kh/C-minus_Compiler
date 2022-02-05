@@ -51,6 +51,7 @@ class Codegen:
         self.temp_symbol_table = []
         self.compile_time_address_call_stack = []
         self.compile_time_address_call_stack_counter = []
+        self.ready_function_lexeme_for_checker = []
 
         self.semantic_errors = []
 
@@ -306,6 +307,7 @@ class Codegen:
             self.program_block.append(f'(JP, {self.ready_function_address[-1]}, , )')
             self.ready_function_address.pop()
             self.ready_function_param_list.pop()
+            self.ready_function_lexeme_for_checker.pop()
             for i in range(self.compile_time_address_call_stack_counter[-1]):
                 address = self.compile_time_address_call_stack.pop()
                 self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
@@ -320,6 +322,7 @@ class Codegen:
             self.ready_function_address.append(self.semantic_stack[-1])
             for symbol in self.masmal_symbol_table:
                 if symbol.pvf == 'func' and symbol.address == self.semantic_stack[-1]:
+                    self.ready_function_lexeme_for_checker.append(symbol.lexeme)
                     self.ready_function_param_list.append(symbol.param_list)
                     # for i in range(len(symbol.param_list)):
                     #     print(f'{symbol.param_list[i].address} from {symbol.lexeme} in {symbol.address} or {self.semantic_stack[-1]}')

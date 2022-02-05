@@ -45,8 +45,8 @@ class Parser:
                    'Factor-prime': [['#get_function_ready', '(', 'Args', ')', '#function_call'], ['EPSILON']],
                    'Factor-zegond': [['(', 'Expression', ')'], ['#pnum', 'NUM']],
                    'Args': [['Arg-list'], ['EPSILON']],
-                   'Arg-list': [['Expression', 'Arg-list-prime']],
-                   'Arg-list-prime': [[',', 'Expression', 'Arg-list-prime'], ['EPSILON']]
+                   'Arg-list': [['Expression', '#arg_count_plus', 'Arg-list-prime']],
+                   'Arg-list-prime': [[',', 'Expression', '#arg_count_plus', 'Arg-list-prime'], ['EPSILON']]
                    }
 
     PREDICTS = {'Program': [['int', 'void', '$']],
