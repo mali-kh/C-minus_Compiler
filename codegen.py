@@ -246,10 +246,6 @@ class Codegen:
             self.id_pvfs.pop()
             self.id_pvfs.append('num')
         elif action_symbol == 'relnum_op':
-            if str(self.semantic_stack[-1])[0] == '@':
-                self.semantic_stack[-1] = '#0'
-            if str(self.semantic_stack[-2])[0] == '@':
-                self.semantic_stack[-2] = '#0'
             self.id_pvfs.pop()
             self.id_pvfs.pop()
             self.id_pvfs.append('num')
