@@ -308,6 +308,8 @@ class Codegen:
                 self.program_block.append(f'(ASSIGN, @{self.CALL_STACK_HEAD}, {address}, )')
             self.compile_time_address_call_stack_counter.pop()
             new_temp_address = self.get_temp()
+            entry = TempSymbolTableEntry(new_temp_address, len(self.scope_stack))
+            self.temp_symbol_table.append(entry)
             self.program_block.append(f'(ASSIGN, {self.RETURN_VALUE_ADDRESS}, {new_temp_address}, )')
             self.semantic_stack.append(new_temp_address)
         elif action_symbol == 'get_function_ready':
