@@ -6,6 +6,7 @@ class SemanticChecker:
         self.declaration_name = ''
         self.arg_count = []
         self.repeat_count = 0
+        self.id_pvfs = []
 
     def set_codegen(self, codegen):
         self.codegen = codegen
@@ -15,9 +16,21 @@ class SemanticChecker:
         if action_symbol == 'pid':
             for symbol in reversed(self.codegen.masmal_symbol_table):
                 if symbol.lexeme == token:
+                    if symbol.pvf == 'pointer' or symbol.pvf == 'array':
+                        self.id_pvfs.append('arr')
+                    else:
+                        self.id_pvfs.append('num')
                     break
             else:
                 self.error_list.append(f'#{lineno} : Semantic Error! \'{token}\' is not defined.')
+        elif action_symbol == 'get_array_element':
+            if self.id_pvfs[-1] == 'arr':
+                self.id_pvfs[-1] = 'num'
+        elif action_symbol == 'relnum_op':
+            if self.id_pvfs[-2] == 'arr' or self.id_pvfs[-1] == 'arr':
+                self.error_list.append(f'#{lineno} : Semantic Error! Type mismatch in operands, Got array instead of int.')
+            self.id_pvfs.pop()
+            self.id_pvfs[-1] = 'num'
         elif action_symbol == 'declare_pid':
             self.declaration_name = token
         elif action_symbol == 'declare_var':
