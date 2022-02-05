@@ -208,6 +208,8 @@ class Codegen:
                 if the_pvf == 'pointer':
                     very_new_address = self.get_temp()
                     self.program_block.append(f'(ADD, {int(self.semantic_stack[-1][1:])*4}, {self.semantic_stack[-2]}, {very_new_address})')
+                    entry = TempSymbolTableEntry(very_new_address, len(self.scope_stack))
+                    self.temp_symbol_table.append(entry)
                 else:
                     very_new_address = self.semantic_stack[-2] + int(self.semantic_stack[-1][1:]) * 4
             else:
@@ -217,6 +219,8 @@ class Codegen:
                     self.program_block.append(f'(ADD, {very_new_address}, {self.semantic_stack[-2]}, {very_new_address})')
                 else:
                     self.program_block.append(f'(ADD, {very_new_address}, #{self.semantic_stack[-2]}, {very_new_address})')
+                entry = TempSymbolTableEntry(very_new_address, len(self.scope_stack))
+                self.temp_symbol_table.append(entry)
                 very_new_address = '@' + str(very_new_address)
             self.semantic_multi_pop(2)
             self.semantic_stack.append(very_new_address)
