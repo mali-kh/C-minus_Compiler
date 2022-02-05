@@ -52,6 +52,7 @@ class Codegen:
         self.compile_time_address_call_stack = []
         self.compile_time_address_call_stack_counter = []
         self.ready_function_lexeme_for_checker = []
+        self.id_pvfs = []
 
         self.semantic_errors = []
 
@@ -104,7 +105,14 @@ class Codegen:
         if action_symbol == 'declare_pid':  # Push ID itself
             self.semantic_stack.append(token)
         elif action_symbol == 'pid':  # Push address
-            self.semantic_stack.append(self.find_addr(token))
+            for symbol in reversed(self.masmal_symbol_table):
+                if symbol.lexeme == token:
+                    self.semantic_stack.append(symbol.address)
+                    if symbol.pvf == 'pointer' or symbol.pvf == 'array':
+                        self.id_pvfs.append('arr')
+                    else:
+                        self.id_pvfs.append('num')
+                    break
         elif action_symbol == 'ptype_int':
             self.semantic_stack.append(token)
         elif action_symbol == 'ptype_void':
@@ -158,6 +166,7 @@ class Codegen:
             self.temp_symbol_table = self.masmal_symbol_table[:self.temp_scope_stack.pop()]
         elif action_symbol == 'pop':
             self.semantic_multi_pop(1)
+            self.id_pvfs.pop()
         elif action_symbol == 'break_jump':
             self.break_back_patch_list.append(len(self.program_block))
             self.program_block.append('')
@@ -166,9 +175,11 @@ class Codegen:
             self.program_block.append('empty')
         elif action_symbol == 'jpf':
             self.program_block[self.semantic_stack[-1]] = f'(JPF, {self.semantic_stack[-2]}, {len(self.program_block)}, )'
+            self.id_pvfs.pop()
             self.semantic_multi_pop(2)
         elif action_symbol == 'jpf_with_else':
             self.program_block[self.semantic_stack[-1]] = f'(JPF, {self.semantic_stack[-2]}, {len(self.program_block)+1}, )'
+            self.id_pvfs.pop()
             self.semantic_multi_pop(2)
         elif action_symbol == 'jp':
             self.program_block[self.semantic_stack[-1]] = f'(JP, {len(self.program_block)}, , )'
@@ -179,6 +190,7 @@ class Codegen:
             for break_back_patch in self.break_back_patch_list:
                 self.program_block[break_back_patch] = f'(JP, {len(self.program_block)}, , )'
             self.break_back_patch_list = []
+            self.id_pvfs.pop()
         elif action_symbol == 'return_empty':
             self.program_block.append(f'(ASSIGN, #0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
             self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
@@ -190,6 +202,7 @@ class Codegen:
             self.program_block.append(f'(ASSIGN, @{self.CALL_STACK_HEAD}, {self.CALL_STACK_JUMP_TEMP}, )')
             self.program_block.append(f'(JP, @{self.CALL_STACK_JUMP_TEMP}, , )')
             self.semantic_multi_pop(1)
+            self.id_pvfs.pop()
         elif action_symbol == 'implicit_return':
             self.program_block.append(f'(ASSIGN, #0, {self.RETURN_VALUE_ADDRESS}, )')  # Is this needed?
             self.program_block.append(f'(SUB, {self.CALL_STACK_HEAD}, #4, {self.CALL_STACK_HEAD})')
@@ -225,6 +238,12 @@ class Codegen:
                 very_new_address = '@' + str(very_new_address)
             self.semantic_multi_pop(2)
             self.semantic_stack.append(very_new_address)
+            if self.id_pvfs[-1] == 'arr':
+                self.id_pvfs[-1] = 'num'
+        elif action_symbol == 'relnum_op':
+            self.id_pvfs.pop()
+            self.id_pvfs.pop()
+            self.id_pvfs.append('num')
         elif action_symbol == 'calculate_relation':
             operator = ''
             if self.semantic_stack[-2] == '<':
@@ -266,6 +285,7 @@ class Codegen:
             self.semantic_stack.append(new_temp_address)
         elif action_symbol == 'pnum':
             self.semantic_stack.append('#' + token)
+            self.id_pvfs.append('num')
         elif action_symbol == 'function_call':
             self.compile_time_address_call_stack_counter.append(0)
             for symbol in reversed(self.masmal_symbol_table):
@@ -300,6 +320,7 @@ class Codegen:
                             break
                 else:
                     self.program_block.append(f'(ASSIGN, {self.semantic_stack.pop()}, {paramie.address}, )')
+                self.id_pvfs.pop()
             self.semantic_stack.pop()  # Accidentally didn't use the function name so I'll just pop it and never think about it again
             # Jump to function body
             self.program_block.append(f'(ASSIGN, #{len(self.program_block)+3}, @{self.CALL_STACK_HEAD}, )')
