@@ -212,6 +212,7 @@ class Parser:
 
     scany = None
     codegeny = None
+    semantic_checkerie = None
     next_token = None
     next_token_symbol = None
     reached_EOF = False
@@ -222,12 +223,14 @@ class Parser:
         self.parse_tree_writer = fw.ParseTreeWriter()
         self.scany = None
         self.codegeny = None
+        self.semantic_checkerie = None
 
     def set_scanner(self, scanner_instance):
         self.scany = scanner_instance
 
-    def set_codegen(self, codegen_instance):
+    def set_codegen_and_semantic_checker(self, codegen_instance, semantic_checker_instance):
         self.codegeny = codegen_instance
+        self.semantic_checkerie = semantic_checker_instance
 
     def get_next_token(self):
         self.next_token = self.scany.get_next_token()
@@ -267,6 +270,7 @@ class Parser:
             if term.startswith('#'):
                 token = self.next_token.split(', ')[1][0:-1]
                 self.codegeny.generate_code(term, token)
+                self.semantic_checkerie.check(term, token, self.scany.get_lineno())
             elif term in self.NON_TERMINALS:
                 child_node = self.parsie(term)
                 if child_node is not None:

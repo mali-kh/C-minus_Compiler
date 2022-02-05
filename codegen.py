@@ -97,8 +97,8 @@ class Codegen:
             self.semantic_stack.pop()
 
     def generate_code(self, action_symbol, token):
-        print(f'{action_symbol} {token}\n///////////////')
-        self.print_program()
+        # print(f'{action_symbol} {token}\n///////////////')
+        # self.print_program()
         action_symbol = action_symbol[1:]
         if action_symbol == 'declare_pid':  # Push ID itself
             self.semantic_stack.append(token)
